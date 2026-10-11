@@ -1,0 +1,80 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ЗооМагнат</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #10251b;
+      color: #fff;
+      font-family: Arial, sans-serif;
+    }
+    main { max-width: 520px; margin: auto; }
+    h1 { color: #b9f27c; text-align: center; }
+    .card {
+      background: #1d3b2b;
+      padding: 16px;
+      border-radius: 16px;
+      margin: 12px 0;
+    }
+    .coins { font-size: 24px; color: #ffe58a; }
+    button {
+      background: #b9f27c;
+      color: #10251b;
+      border: 0;
+      border-radius: 10px;
+      padding: 12px;
+      font-weight: bold;
+      width: 100%;
+      margin-top: 8px;
+    }
+    small { color: #c4d8c9; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>🦁 ЗооМагнат</h1>
+  <div class="card">
+    <h2>Твой зоопарк</h2>
+    <p class="coins">🪙 <span id="coins">250</span> монет</p>
+    <p>Покупай животных и развивай свой зоопарк!</p>
+  </div>
+  <div id="animals"></div>
+  <div class="card">
+    <h3>📋 Как играть</h3>
+    <p>Покупай животных за монеты. Это стартовая демонстрация интерфейса.</p>
+    <small>Монеты пока игровые. Вывода денег или криптовалюты нет.</small>
+  </div>
+</main>
+<script>
+  let coins = 250;
+  const animals = [
+    {name:"🐰 Кролик", price:50},
+    {name:"🦊 Лиса", price:180},
+    {name:"🦌 Олень", price:600},
+    {name:"🦁 Лев", price:1800}
+  ];
+  const owned = [];
+  function render() {
+    document.getElementById("coins").textContent = coins;
+    document.getElementById("animals").innerHTML = animals.map((a,i) =>
+      `<div class="card"><h3>${a.name}</h3><p>Цена: ${a.price} монет</p><button onclick="buy(${i})">Купить</button></div>`
+    ).join("");
+  }
+  function buy(i) {
+    const a = animals[i];
+    if (coins < a.price) { alert("Недостаточно монет!"); return; }
+    coins -= a.price;
+    owned.push(a.name);
+    alert("Поздравляем! Ты купил: " + a.name);
+    render();
+  }
+  render();
+</script>
+</body>
+</html>
