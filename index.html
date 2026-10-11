@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#163d2b">
+<title>ЗооМагнат</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root{font-family:system-ui,-apple-system,sans-serif;color:#173b2a;background:#f2f7ed}
+*{box-sizing:border-box}body{margin:0;padding:16px;max-width:680px;margin-inline:auto}
+.hero{background:linear-gradient(135deg,#174b31,#43834a);color:white;border-radius:22px;padding:20px;box-shadow:0 8px 24px #174b3120}
+h1{margin:0 0 6px;font-size:27px}.muted{opacity:.8;font-size:13px}.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.stat{background:#ffffff20;border:1px solid #ffffff30;border-radius:14px;padding:12px}.stat b{display:block;font-size:21px}
+h2{font-size:19px;margin:22px 0 10px}.animal{background:white;border:1px solid #e0e9d9;border-radius:16px;padding:13px;display:flex;gap:12px;align-items:center;margin:9px 0;box-shadow:0 3px 12px #244a2510}
+.emoji{font-size:36px;width:48px;text-align:center}.details{flex:1}.details b{display:block}.small{font-size:12px;color:#607766;margin-top:3px}
+button{border:0;background:#287847;color:white;padding:11px 13px;border-radius:12px;font-weight:700;font-size:14px}
+button:disabled{opacity:.4}.notice{background:#fff5d9;border:1px solid #f0dda2;padding:12px;border-radius:14px;font-size:12px;line-height:1.5;margin-top:16px}
+#message{font-size:13px;min-height:20px;color:#9b4d20;margin-top:8px}.footer{color:#748574;font-size:11px;text-align:center;margin:22px 0}
+</style>
+</head>
+<body>
+<div class="hero">
+  <div style="font-size:12px;letter-spacing:1px;opacity:.8">ТВОЙ СОБСТВЕННЫЙ БИЗНЕС</div>
+  <h1>🦁 ЗооМагнат</h1>
+  <div id="welcome">Построй лучший зоопарк!</div>
+  <div class="stats">
+    <div class="stat">🪙 Монеты<b id="coins">—</b></div>
+    <div class="stat">📈 Доход в минуту<b id="income">—</b></div>
+  </div>
+</div>
+<h2>🐾 Покупай животных</h2>
+<div id="animals">Загрузка зоопарка…</div>
+<div id="message"></div>
+<div class="notice"><b>Важно:</b> сейчас монеты — только игровая валюта. У них нет денежной стоимости, обмен и вывод не подключены. Реальные выплаты появятся только при наличии законного источника дохода, опубликованных правил и отдельной безопасной платёжной системы.</div>
+<h2>🏆 Лидеры</h2><div id="leaders" class="small">Загрузка рейтинга…</div>
+<div class="footer">ЗооМагнат MVP · версия 0.1 · Играй честно, развивай зоопарк</div>
+<script>
+const tg=window.Telegram?.WebApp;
+tg?.ready(); tg?.expand();
+const initData=tg?.initData||"";
+const fmt=n=>Number(n||0).toLocaleString("ru-RU");
+async function api(path,opts={}){
+ const res=await fetch(path,{...opts,headers:{"Content-Type":"application/json","Authorization":"tma "+initData,...(opts.headers||{})}});
+ const data=await res.json().catch(()=>({detail:"Ошибка сервера"}));
+ if(!res.ok) throw new Error(data.detail||"Ошибка");
+ return data;
+}
+function render(s){
+ document.getElementById("welcome").textContent="Добро пожаловать, "+s.name+"!";
+ document.getElementById("coins").textContent=fmt(s.coins);
+ document.getElementById("income").textContent=fmt(s.income_per_minute)+" 🪙";
+ document.getElementById("animals").innerHTML=s.animals.map(a=>`
+ <div class="animal"><div class="emoji">${a.emoji}</div><div class="details"><b>${a.name} × ${a.qty}</b><div class="small">Цена: ${fmt(a.price)} · Доход: ${fmt(a.income)}/мин за каждое</div></div>
+ <button ${s.coins<a.price?"disabled":""} onclick="buy('${a.key}')">Купить</button></div>`).join("");
+}
+async function load(){
+ if(!initData){document.getElementById("animals").innerHTML="Открой игру через Telegram-бота, чтобы войти.";return}
+ try{render(await api("/api/state"));const l=await api("/api/leaderboard");document.getElementById("leaders").innerHTML=l.length?l.map((x,i)=>`${i+1}. ${escapeHtml(x.name)} — ${fmt(x.score)} очков`).join("<br>"):"Пока нет игроков";}
+ catch(e){document.getElementById("message").textContent=e.message}
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+async function buy(key){try{render(await api("/api/buy",{method:"POST",body:JSON.stringify({animal:key})}));document.getElementById("message").textContent="Покупка успешна!";tg?.HapticFeedback?.notificationOccurred("success")}catch(e){document.getElementById("message").textContent=e.message;tg?.HapticFeedback?.notificationOccurred("error")}}
+load();setInterval(load,30000);
+</script>
+</body></html>
