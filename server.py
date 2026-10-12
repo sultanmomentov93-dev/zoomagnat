@@ -77,12 +77,17 @@ def init_db():
                 created_at BIGINT NOT NULL
             )
         """)
+        c.execute("""
+            CREATE TABLE IF NOT EXISTS zoo_expansions(
+                user_id BIGINT PRIMARY KEY,
+                level INTEGER NOT NULL DEFAULT 1
+            )
+        """)
 
 
 @app.on_event("startup")
 def startup():
     init_db()
-
 
 def validate_init_data(raw: str) -> dict:
     if not BOT_TOKEN:
