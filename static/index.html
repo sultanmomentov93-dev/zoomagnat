@@ -216,6 +216,21 @@ tiles.forEach(tile => {
 
   const card = document.createElement("div");
   card.className = "zone-tile" + (unlocked ? "" : " locked");
+  card.style.cursor = "pointer";
+
+card.addEventListener("click", () => {
+  if (tile.level === 1 || unlocked) {
+    showMessage("✅ Территория «" + tile.name + "» уже открыта!");
+    return;
+  }
+
+  if (zone && latestState && latestState.coins >= zone.price) {
+    expandZone(tile.level);
+  } else if (zone) {
+    showMessage("🪙 Нужно " + zone.price + " монет для открытия территории «" + tile.name + "».");
+  }
+});
+  
 
   const icon = document.createElement("div");
   icon.className = "zone-icon";
