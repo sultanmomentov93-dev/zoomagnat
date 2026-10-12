@@ -276,3 +276,111 @@ def leaderboard(authorization: Optional[str] = Header(default=None)):
 @app.get("/api/health")
 def health():
     return {"ok": True, "game": "ZooMagnat", "version": "0.2.0"}
+    
+EXPANSIONS = {
+    2: {"name": "Лес", "price": 1000},
+    3: {"name": "Горы", "price": 5000},
+    4: {"name": "Водная зона", "price": 20000},
+}
+
+
+class ExpansionAction(BaseModel):
+    level: int
+
+
+@app.get("/api/expansions")
+def get_expansions(authorization: Optional[str] = Header(default=None)):
+    user = auth(authorization)
+    uid = user["id"]
+
+    with db() as c:
+        c.execute(
+            """INSERT INTO zoo_expansions(user_id, level)
+               VALUES(%s, 1)
+               ON CONFLICT(user_id) DO NOTHING""",
+            (uid,),
+        )
+        row = c.execute(
+            "SELECT level FROM zoo_expansions WHERE user_id=%s",
+            (uid,),
+        ).fetchone()
+
+    current_level = row["level"]
+    return {
+        "level": current_level,
+        "expansions": [
+            {
+                "level": level,
+                "name": info["name"],
+                "price": info["price"],
+                "unlocked": level <= current_level,
+            }
+            for level, info in EXPANSIONS.items()
+        ],
+    }
+
+
+@app.post("/api/expand")
+def expand(
+    action: ExpansionAction,
+    authorization: Optional[str] = Header(default=None),
+):
+    user = auth(authorization)
+    uid = user["id"]
+
+    if action.level not in EXPANSIONS:
+        raise HTTPException(400, "Неизвестная территория")
+
+    info = EXPANSIONS[action.level]
+
+    with db() as c:
+        c.execute(
+            """INSERT INTO zoo_expansions(user_id, level)
+               VALUES(%s, 1)
+               ON CONFLICT(user_id) DO NOTHING""",
+            (uid,),
+        )
+
+
+        current = c.execute(
+            "SELECT level FROM zoo_expansions WHERE user_id=%s FOR UPDATE",
+            (uid,),
+        ).fetchone()["level"]
+
+        if action.level != current + 1:
+            raise HTTPException(400, "Сначала открой предыдущую территорию")
+
+        player = c.execute(
+            "SELECT coins FROM players WHERE user_id=%s FOR UPDATE",
+            (uid,),
+        ).fetchone()
+
+        if player is None:
+            raise HTTPException(401, "Сначала открой игру")
+
+        if player["coins"] < info["price"]:
+            raise HTTPException(400, "Недостаточно монет")
+
+        now = int(time.time())
+        c.execute(
+            "UPDATE players SET coins=coins-%s WHERE user_id=%s",
+            (info["price"], uid),
+        )
+        c.execute(
+            "UPDATE zoo_expansions SET level=%s WHERE user_id=%s",
+            (action.level, uid),
+        )
+        c.execute(
+            """INSERT INTO ledger(user_id,event,amount,created_at)
+               VALUES(%s,%s,%s,%s)""",
+            (uid, "expand_" + str(action.level), -info["price"], now),
+        )
+
+    return {
+        "ok": True,
+        "level": action.level,
+        "name": info["name"],
+        "coins_spent": info["price"],
+      }
+
+
