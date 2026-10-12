@@ -1,50 +1,134 @@
 
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10251b">
   <title>ЗооМагнат</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     * { box-sizing: border-box; }
     body {
-      margin: 0; padding: 20px;
-      background: #10251b; color: #fff;
+      margin: 0;
+      padding: 16px;
+      background: #0b1912;
+      color: #fff;
       font-family: Arial, sans-serif;
     }
     main { max-width: 520px; margin: auto; }
-    h1 { color: #b9f27c; text-align: center; }
-    .card {
-      background: #1d3b2b; padding: 16px;
-      border-radius: 16px; margin: 12px 0;
+    .hero {
+      padding: 24px 18px;
+      border-radius: 24px;
+      background: linear-gradient(135deg, #28583a, #132c20);
+      border: 1px solid #47794e;
+      text-align: center;
     }
-    .coins { font-size: 24px; color: #ffe58a; }
+    h1 { color: #c9ff8b; margin: 0 0 8px; font-size: 30px; }
+    .subtitle { color: #c5d9c9; font-size: 14px; }
+    .balance {
+      margin-top: 22px;
+      padding: 18px;
+      background: #14271c;
+      border-radius: 18px;
+    }
+    .balance-label { color: #b8cbbb; font-size: 13px; }
+    .coins { color: #ffe58a; font-size: 30px; font-weight: bold; margin: 8px 0; }
+    .income { color: #b9f27c; font-size: 14px; }
+    .section-title { margin: 26px 0 8px; font-size: 21px; }
+    .section-note { color: #a9c0af; font-size: 13px; margin-bottom: 14px; }
+    .animal {
+      background: #193425;
+      border: 1px solid #31553b;
+      border-radius: 18px;
+      padding: 16px;
+      margin: 12px 0;
+    }
+    .animal-top {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .emoji {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 68px;
+      height: 68px;
+      flex-shrink: 0;
+      background: #294a33;
+      border-radius: 17px;
+      font-size: 40px;
+    }
+    .animal h3 { margin: 0 0 7px; font-size: 19px; }
+    .owned { color: #b9f27c; font-size: 13px; }
+    .stats {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 15px;
+      padding: 12px;
+      background: #11271a;
+      border-radius: 12px;
+      font-size: 12px;
+      color: #c4d8c9;
+    }
+    .stats strong { color: #fff; display: block; margin-top: 5px; font-size: 14px; }
     button {
-      background: #b9f27c; color: #10251b;
-      border: 0; border-radius: 10px; padding: 12px;
-      font-weight: bold; width: 100%; margin-top: 8px;
+      background: #b9f27c;
+      color: #10251b;
+      border: 0;
+      border-radius: 12px;
+      padding: 14px;
+      font-weight: bold;
+      font-size: 15px;
+      width: 100%;
+      margin-top: 14px;
     }
-    button:disabled { opacity: .5; }
-    small { color: #c4d8c9; }
-    #message { white-space: pre-wrap; overflow-wrap: anywhere; }
+    button:disabled { opacity: .45; }
+    #message {
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      color: #d8e8d9;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .info {
+      margin-top: 22px;
+      padding: 16px;
+      border-radius: 16px;
+      background: #17291e;
+      color: #c4d8c9;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .info h3 { color: #c9ff8b; margin-top: 0; }
   </style>
 </head>
 <body>
 <main>
-  <h1>🦁 ЗооМагнат</h1>
-  <div class="card">
-    <h2>Твой зоопарк</h2>
-    <p class="coins">🪙 <span id="coins">—</span> монет</p>
-    <p>Доход: <span id="income">—</span> монет в минуту</p>
+  <div class="hero">
+    <h1>🦁 ЗооМагнат</h1>
+    <div class="subtitle">Построй свой собственный зоопарк!</div>
+    <div class="balance">
+      <div class="balance-label">ТВОЙ БАЛАНС</div>
+      <div class="coins">🪙 <span id="coins">—</span></div>
+      <div class="income">💰 Доход: <span id="income">—</span> монет/мин</div>
+    </div>
   </div>
-  <p id="message">Загружаем игру...</p>
+
+  <h2 class="section-title">🐾 Твои животные</h2>
+  <div class="section-note">Покупай животных и увеличивай доход зоопарка.</div>
+  <p id="message">Загружаем твой зоопарк...</p>
   <div id="animals"></div>
-  <div class="card">
-    <h3>📋 Как играть</h3>
-    <p>Покупай животных и получай игровой доход.</p>
-    <small>Монеты игровые, обмена на реальные деньги нет.</small>
+
+  <div class="info">
+    <h3>🌿 Как развивать зоопарк</h3>
+    🐰 Кролик — первый шаг к большому зоопарку.<br>
+    🦊 Лиса — больше игрового дохода.<br>
+    🦌 Олень — развивай своё хозяйство.<br>
+    🦁 Лев — настоящий царь зоопарка!
+    <p>Монеты используются только внутри игры и не обмениваются на реальные деньги.</p>
   </div>
 </main>
 
@@ -54,11 +138,12 @@ tg.ready();
 tg.expand();
 
 let busy = false;
+let latestState = null;
 
 async function api(path, method = "GET", body = null) {
   const initData = tg.initData;
   if (!initData) {
-    throw new Error("Открой игру через Telegram, используя кнопку «Играть».");
+    throw new Error("Открой игру через Telegram кнопкой «Играть».");
   }
 
   const options = {
@@ -85,35 +170,58 @@ function showMessage(text) {
 }
 
 function render(state) {
+  latestState = state;
   document.getElementById("coins").textContent = state.coins;
-  document.getElementById("income").textContent =
-    state.income_per_minute;
+  document.getElementById("income").textContent = state.income_per_minute;
 
   const container = document.getElementById("animals");
   container.replaceChildren();
 
   state.animals.forEach(animal => {
     const card = document.createElement("div");
-    card.className = "card";
+    card.className = "animal";
 
+    const top = document.createElement("div");
+    top.className = "animal-top";
+
+    const emoji = document.createElement("div");
+    emoji.className = "emoji";
+    emoji.textContent = animal.emoji;
+
+    const details = document.createElement("div");
     const title = document.createElement("h3");
-    title.textContent = animal.emoji + " " + animal.name;
+    title.textContent = animal.name;
 
-    const quantity = document.createElement("p");
-    quantity.textContent = "У тебя: " + animal.qty;
+    const owned = document.createElement("div");
+    owned.className = "owned";
+    owned.textContent = "В твоём зоопарке: " + animal.qty;
 
-    const price = document.createElement("p");
-    price.textContent = "Цена: " + animal.price + " монет";
+    details.append(title, owned);
+    top.append(emoji, details);
 
-    const income = document.createElement("p");
-    income.textContent = "Доход: " + animal.income + " монет/мин";
+    const stats = document.createElement("div");
+    stats.className = "stats";
+
+    const price = document.createElement("div");
+    price.textContent = "🪙 Цена";
+    const priceValue = document.createElement("strong");
+    priceValue.textContent = animal.price + " монет";
+    price.append(priceValue);
+
+    const earning = document.createElement("div");
+    earning.textContent = "💰 Доход";
+    const earningValue = document.createElement("strong");
+    earningValue.textContent = animal.income + "/мин";
+    earning.append(earningValue);
+
+    stats.append(price, earning);
 
     const button = document.createElement("button");
-    button.textContent = "Купить";
+    button.textContent = "Купить " + animal.emoji;
     button.disabled = busy || state.coins < animal.price;
     button.addEventListener("click", () => buy(animal.key));
 
-    card.append(title, quantity, price, income, button);
+    card.append(top, stats, button);
     container.append(card);
   });
 }
@@ -122,7 +230,7 @@ async function loadGame() {
   try {
     const state = await api("/api/state");
     render(state);
-    showMessage(state.notice || "");
+    showMessage(state.notice || "Добро пожаловать в свой зоопарк!");
   } catch (error) {
     showMessage("Не удалось загрузить игру.\n" + error.message);
   }
@@ -131,14 +239,14 @@ async function loadGame() {
 async function buy(animalKey) {
   if (busy) return;
   busy = true;
+
+  if (latestState) render(latestState);
   showMessage("Покупаем животное...");
 
   try {
-    const state = await api("/api/buy", "POST", {
-      animal: animalKey
-    });
+    const state = await api("/api/buy", "POST", { animal: animalKey });
     render(state);
-    showMessage("Покупка успешно сохранена!");
+    showMessage("✅ Покупка сохранена!");
   } catch (error) {
     showMessage("Покупка не выполнена.\n" + error.message);
   } finally {
