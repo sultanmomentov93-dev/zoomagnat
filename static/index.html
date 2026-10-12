@@ -262,6 +262,7 @@ tiles.forEach(tile => {
   
 
 card.addEventListener("click", () => {
+    showMessage("Нажата территория: " + tile.name);
   if (tile.level === 1 || unlocked) {
     showMessage("✅ Территория «" + tile.name + "» уже открыта!");
     return;
