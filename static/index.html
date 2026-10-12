@@ -259,6 +259,8 @@ tiles.forEach(tile => {
   card.className = "zone-tile" + (unlocked ? "" : " locked");
   card.dataset.zone = tile.level;
   card.style.cursor = "pointer";
+card.style.pointerEvents = "auto";
+card.style.zIndex = "2";
   
 
 card.addEventListener("click", () => {
