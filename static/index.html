@@ -103,6 +103,52 @@
       line-height: 1.6;
     }
     .info h3 { color: #c9ff8b; margin-top: 0; }
+    
+    /* Карта зоопарка */
+    .zoo-map {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin: 16px 0;
+    }
+
+    .zone-tile {
+      min-height: 125px;
+      padding: 16px 8px;
+      border-radius: 18px;
+      text-align: center;
+      background: linear-gradient(145deg, #244b32, #14291d);
+      border: 1px solid #47794e;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .zone-tile .zone-icon {
+      font-size: 38px;
+    }
+
+    .zone-tile strong {
+      color: #c9ff8b;
+      font-size: 15px;
+    }
+
+    .zone-tile span {
+      color: #c5d9c9;
+      font-size: 12px;
+    }
+
+    .zone-tile.locked {
+      background: #17221b;
+      border-color: #344239;
+      opacity: .7;
+    }
+
+    .zone-tile.locked strong {
+      color: #c4d0c6;
+    }
   </style>
 </head>
 <body>
@@ -124,6 +170,7 @@
     <section id="territories">
     <h2 class="section-title">🌳 Территории зоопарка</h2>
     <div class="section-note">Расширяй зоопарк и открывай новые зоны!</div>
+      <div id="zoo-map" class="zoo-map"></div>
     <div id="expansions"></div>
   </section>
 
@@ -152,6 +199,37 @@ container.textContent = "Загружаем территории...";
 try {
 const data = await api("/api/expansions");
 container.replaceChildren();
+  
+const map = document.getElementById("zoo-map");
+map.replaceChildren();
+
+const tiles = [
+  { level: 1, name: "Стартовая зона", icon: "🏡" },
+  { level: 2, name: "Лес", icon: "🌲" },
+  { level: 3, name: "Горы", icon: "⛰️" },
+  { level: 4, name: "Водная зона", icon: "🌊" }
+];
+
+tiles.forEach(tile => {
+  const zone = data.expansions.find(item => item.level === tile.level);
+  const unlocked = tile.level === 1 || (zone && zone.unlocked);
+
+  const card = document.createElement("div");
+  card.className = "zone-tile" + (unlocked ? "" : " locked");
+
+  const icon = document.createElement("div");
+  icon.className = "zone-icon";
+  icon.textContent = unlocked ? tile.icon : "🔒";
+
+  const title = document.createElement("strong");
+  title.textContent = tile.name;
+
+  const status = document.createElement("span");
+  status.textContent = unlocked ? "Открыта" : "Ещё закрыта";
+
+  card.append(icon, title, status);
+  map.append(card);
+});
 
 
 const starter = document.createElement("div");
