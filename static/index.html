@@ -121,6 +121,12 @@
   <div class="section-note">Покупай животных и увеличивай доход зоопарка.</div>
   <p id="message">Загружаем твой зоопарк...</p>
   <div id="animals"></div>
+    <section id="territories">
+    <h2 class="section-title">🌳 Территории зоопарка</h2>
+    <div class="section-note">Расширяй зоопарк и открывай новые зоны!</div>
+    <div id="expansions"></div>
+  </section>
+
 
   <div class="info">
     <h3>🌿 Как развивать зоопарк</h3>
@@ -139,6 +145,72 @@ tg.expand();
 
 let busy = false;
 let latestState = null;
+  async function loadExpansions() {
+const container = document.getElementById("expansions");
+container.textContent = "Загружаем территории...";
+
+try {
+const data = await api("/api/expansions");
+container.replaceChildren();
+
+
+const starter = document.createElement("div");
+starter.className = "animal";
+starter.textContent = "🏡 Стартовая территория — открыта";
+container.append(starter);
+
+data.expansions.forEach(zone => {
+  const card = document.createElement("div");
+  card.className = "animal";
+
+  const title = document.createElement("h3");
+  title.textContent = zone.name;
+
+  const price = document.createElement("p");
+  price.textContent = "🪙 Цена: " + zone.price + " монет";
+
+  const status = document.createElement("p");
+  status.textContent = zone.unlocked ? "✅ Открыта" : "🔒 Закрыта";
+
+  card.append(title, price, status);
+
+  if (!zone.unlocked) {
+    const button = document.createElement("button");
+    button.textContent = "Открыть территорию";
+    button.disabled = busy || !latestState ||
+      latestState.coins < zone.price;
+    button.addEventListener("click", () => expandZone(zone.level));
+    card.append(button);
+  }
+
+  container.append(card);
+});
+
+
+} catch (error) {
+container.textContent = "Не удалось загрузить территории: " + error.message;
+}
+}
+
+async function expandZone(level) {
+if (busy) return;
+busy = true;
+showMessage("Открываем территорию...");
+
+try {
+const result = await api("/api/expand", "POST", { level });
+showMessage("✅ Открыта территория: " + result.name);
+const state = await api("/api/state");
+render(state);
+} catch (error) {
+showMessage("Не удалось открыть территорию: " + error.message);
+} finally {
+busy = false;
+await loadGame();
+await loadExpansions();
+}
+}
+
 
 async function api(path, method = "GET", body = null) {
   const initData = tg.initData;
@@ -254,6 +326,7 @@ async function buy(animalKey) {
     try {
       const state = await api("/api/state");
       render(state);
+            await loadExpansions();
     } catch (error) {
       showMessage("Не удалось обновить баланс.\n" + error.message);
     }
@@ -261,6 +334,7 @@ async function buy(animalKey) {
 }
 
 loadGame();
+loadExpansions();
 </script>
 </body>
 </html>
