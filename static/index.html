@@ -125,6 +125,34 @@
       align-items: center;
       gap: 8px;
     }
+    
+    .zone-tile {
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .zone-tile[data-zone="1"] {
+      background-image: linear-gradient(#10251b33, #10251bcc),
+        url("https://images.unsplash.com/photo-1472396961693-142e6e269027?auto=format&fit=crop&w=700&q=80");
+    }
+
+    .zone-tile[data-zone="2"] {
+      background-image: linear-gradient(#10251b33, #10251bcc),
+        url("https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=700&q=80");
+    }
+
+    .zone-tile[data-zone="3"] {
+      background-image: linear-gradient(#10251b33, #10251bcc),
+        url("https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=700&q=80");
+    }
+
+    .zone-tile[data-zone="4"] {
+      background-image: linear-gradient(#10251b33, #10251bcc),
+        url("https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=700&q=80");
+    }
 
     .zone-tile .zone-icon {
       font-size: 38px;
@@ -141,10 +169,23 @@
     }
 
     .zone-tile.locked {
-      background: #17221b;
-      border-color: #344239;
-      opacity: .7;
-    }
+  border-color: #344239;
+}
+
+.zone-tile.locked::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #101a1680;
+  pointer-events: none;
+}
+
+.zone-tile .zone-icon,
+.zone-tile strong,
+.zone-tile span {
+  position: relative;
+  z-index: 1;
+}
 
     .zone-tile.locked strong {
       color: #c4d0c6;
@@ -216,7 +257,9 @@ tiles.forEach(tile => {
 
   const card = document.createElement("div");
   card.className = "zone-tile" + (unlocked ? "" : " locked");
+  card.dataset.zone = tile.level;
   card.style.cursor = "pointer";
+  
 
 card.addEventListener("click", () => {
   if (tile.level === 1 || unlocked) {
