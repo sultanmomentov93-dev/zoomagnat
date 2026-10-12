@@ -9,7 +9,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
-BASE = Path(**file**).resolve().parent
+BASE = Path(__file__).resolve().parent
 DATABASE_URL = os.getenv("DATABASE_URL", "").strip()
 BOT_TOKEN = os.getenv("BOT_TOKEN", "").strip()
 
