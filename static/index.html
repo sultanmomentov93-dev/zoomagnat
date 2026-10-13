@@ -167,6 +167,30 @@
       color: #c5d9c9;
       font-size: 12px;
     }
+/* Фоны игровых территорий */
+body.zone-start {
+background: linear-gradient(#0b1912cc, #0b1912ee),
+url("https://images.unsplash.com/photo-1472396961693-142e6e269027?auto=format&fit=crop&w=1200&q=80")
+center / cover fixed;
+}
+
+body.zone-forest {
+background: linear-gradient(#071b10aa, #071b10dd),
+url("https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1200&q=80")
+center / cover fixed;
+}
+
+body.zone-mountains {
+background: linear-gradient(#10192399, #101923dd),
+url("https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80")
+center / cover fixed;
+}
+
+body.zone-water {
+background: linear-gradient(#082c3999, #082c39dd),
+url("https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=1200&q=80")
+center / cover fixed;
+}
 
     .zone-tile.locked {
   border-color: #344239;
@@ -257,6 +281,7 @@ async function loadExpansions() {
       );
 
       const unlocked =
+
         tile.level === 1 || Boolean(zone && zone.unlocked);
 
       const card = document.createElement("div");
@@ -279,39 +304,54 @@ async function loadExpansions() {
         ? "Открыта"
         : "Нажми, чтобы открыть";
 
-      card.append(icon, title, status);
+      ```
+  card.addEventListener("click", async () => {
+    const backgrounds = {
+      1: "zone-start",
+      2: "zone-forest",
+      3: "zone-mountains",
+      4: "zone-water"
+    };
 
-      card.addEventListener("click", () => {
-        if (unlocked) {
-          showMessage(
-            "✅ Территория «" + tile.name + "» уже открыта!"
-          );
-          return;
-        }
+    if (unlocked) {
+      document.body.classList.remove(
+        "zone-start",
+        "zone-forest",
+        "zone-mountains",
+        "zone-water"
+      );
 
-        if (!zone) {
-          showMessage("Не удалось загрузить данные территории.");
-          return;
-        }
+      document.body.classList.add(backgrounds[tile.level]);
 
-        if (!latestState || latestState.coins < zone.price) {
-          showMessage(
-            "🪙 Нужно " + zone.price +
-            " монет для открытия территории «" + tile.name + "»."
-          );
-          return;
-        }
+      showMessage("🌿 Ты перешёл в территорию «" + tile.name + "»!");
+      return;
+    }
 
-        expandZone(tile.level);
-      });
+    if (!zone) {
+      showMessage("Не удалось загрузить данные территории.");
+      return;
+    }
 
-      map.append(card);
-    });
+    if (!latestState || latestState.coins < zone.price) {
+      showMessage(
+        "🪙 Нужно " + zone.price +
+        " монет для открытия территории «" + tile.name + "»."
+      );
+      return;
+    }
 
-    const starter = document.createElement("div");
-    starter.className = "animal";
-    starter.textContent = "🏡 Стартовая территория — открыта";
-    container.append(starter);
+    await expandZone(tile.level);
+  });
+
+  map.append(card);
+});
+
+const starter = document.createElement("div");
+starter.className = "animal";
+starter.textContent = "🏡 Стартовая территория — открыта";
+container.append(starter);
+```
+;
 
     data.expansions.forEach(zone => {
       const card = document.createElement("div");
