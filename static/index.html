@@ -264,6 +264,13 @@ async function loadExpansions() {
 
   try {
     const data = await api("/api/expansions");
+    try {
+    const data = await api("/api/expansions");
+    container.textContent = "Территории загружаются...";
+    console.log("Территории с сервера:", data.expansions);
+
+    container.replaceChildren();
+    map.replaceChildren();
     console.log("Территории с сервера:", data.expansions);
 
     container.replaceChildren();
