@@ -383,12 +383,17 @@ container.append(starter);
 
       container.append(card);
     });
-  } catch (error) {
-    container.textContent =
-      "Не удалось загрузить территории: " + error.message;
+  
+} catch (error) {
+  console.error("Ошибка loadExpansions:", error);
+  container.textContent =
+    "Ошибка загрузки территорий: " + error.message;
+  const map = document.getElementById("zoo-map");
+  if (map) {
+    map.textContent = "Ошибка карты: " + error.message;
   }
 }
-
+}
 async function expandZone(level) {
 if (busy) return;
 busy = true;
