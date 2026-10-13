@@ -233,102 +233,120 @@ tg.expand();
 
 let busy = false;
 let latestState = null;
-  async function loadExpansions() {
-const container = document.getElementById("expansions");
-container.textContent = "Загружаем территории...";
-
-try {
-const data = await api("/api/expansions");
-container.replaceChildren();
   
-const map = document.getElementById("zoo-map");
-map.replaceChildren();
+async function loadExpansions() {
+  const container = document.getElementById("expansions");
+  const map = document.getElementById("zoo-map");
 
-const tiles = [
-  { level: 1, name: "Стартовая зона", icon: "🏡" },
-  { level: 2, name: "Лес", icon: "🌲" },
-  { level: 3, name: "Горы", icon: "⛰️" },
-  { level: 4, name: "Водная зона", icon: "🌊" }
-];
+  try {
+    const data = await api("/api/expansions");
 
-tiles.forEach(tile => {
-  const zone = data.expansions.find(item => item.level === tile.level);
-  const unlocked = tile.level === 1 || (zone && zone.unlocked);
+    container.replaceChildren();
+    map.replaceChildren();
 
-  const card = document.createElement("div");
-  card.className = "zone-tile" + (unlocked ? "" : " locked");
-  card.dataset.zone = tile.level;
-  card.style.cursor = "pointer";
-card.style.pointerEvents = "auto";
-card.style.zIndex = "2";
-  
+    const tiles = [
+      { level: 1, name: "Стартовая зона", icon: "🏡" },
+      { level: 2, name: "Лес", icon: "🌲" },
+      { level: 3, name: "Горы", icon: "⛰️" },
+      { level: 4, name: "Водная зона", icon: "🌊" }
+    ];
 
-card.addEventListener("click", () => {
-    showMessage("Нажата территория: " + tile.name);
-  if (tile.level === 1 || unlocked) {
-    showMessage("✅ Территория «" + tile.name + "» уже открыта!");
-    return;
+    tiles.forEach(tile => {
+      const zone = data.expansions.find(
+        item => item.level === tile.level
+      );
+
+      const unlocked =
+        tile.level === 1 || Boolean(zone && zone.unlocked);
+
+      const card = document.createElement("div");
+      card.className = "zone-tile" + (unlocked ? "" : " locked");
+      card.dataset.zone = tile.level;
+      card.style.cursor = "pointer";
+      card.style.pointerEvents = "auto";
+      card.style.position = "relative";
+      card.style.zIndex = "2";
+
+      const icon = document.createElement("div");
+      icon.className = "zone-icon";
+      icon.textContent = unlocked ? tile.icon : "🔒";
+
+      const title = document.createElement("strong");
+      title.textContent = tile.name;
+
+      const status = document.createElement("span");
+      status.textContent = unlocked
+        ? "Открыта"
+        : "Нажми, чтобы открыть";
+
+      card.append(icon, title, status);
+
+      card.addEventListener("click", () => {
+        if (unlocked) {
+          showMessage(
+            "✅ Территория «" + tile.name + "» уже открыта!"
+          );
+          return;
+        }
+
+        if (!zone) {
+          showMessage("Не удалось загрузить данные территории.");
+          return;
+        }
+
+        if (!latestState || latestState.coins < zone.price) {
+          showMessage(
+            "🪙 Нужно " + zone.price +
+            " монет для открытия территории «" + tile.name + "»."
+          );
+          return;
+        }
+
+        expandZone(tile.level);
+      });
+
+      map.append(card);
+    });
+
+    const starter = document.createElement("div");
+    starter.className = "animal";
+    starter.textContent = "🏡 Стартовая территория — открыта";
+    container.append(starter);
+
+    data.expansions.forEach(zone => {
+      const card = document.createElement("div");
+      card.className = "animal";
+
+      const title = document.createElement("h3");
+      title.textContent = zone.name;
+
+      const price = document.createElement("p");
+      price.textContent = "🪙 Цена: " + zone.price + " монет";
+
+      const status = document.createElement("p");
+      status.textContent = zone.unlocked ? "✅ Открыта" : "🔒 Закрыта";
+
+      card.append(title, price, status);
+
+      if (!zone.unlocked) {
+        const button = document.createElement("button");
+        button.textContent = "Открыть территорию";
+        button.disabled =
+          busy || !latestState || latestState.coins < zone.price;
+
+        button.addEventListener("click", () => {
+          expandZone(zone.level);
+        });
+
+        card.append(button);
+      }
+
+      container.append(card);
+    });
+  } catch (error) {
+    container.textContent =
+      "Не удалось загрузить территории: " + error.message;
   }
-
-  if (zone && latestState && latestState.coins >= zone.price) {
-    expandZone(tile.level);
-  } else if (zone) {
-    showMessage("🪙 Нужно " + zone.price + " монет для открытия территории «" + tile.name + "».");
-  }
-});
-  
-
-  const icon = document.createElement("div");
-  icon.className = "zone-icon";
-  icon.textContent = unlocked ? tile.icon : "🔒";
-
-  const title = document.createElement("strong");
-  title.textContent = tile.name;
-
-  const status = document.createElement("span");
-  status.textContent = unlocked ? "Открыта" : "Ещё закрыта";
-
-  card.append(icon, title, status);
-  map.append(card);
-});
-
-
-const starter = document.createElement("div");
-starter.className = "animal";
-starter.textContent = "🏡 Стартовая территория — открыта";
-container.append(starter);
-
-data.expansions.forEach(zone => {
-  const card = document.createElement("div");
-  card.className = "animal";
-
-  const title = document.createElement("h3");
-  title.textContent = zone.name;
-
-  const price = document.createElement("p");
-  price.textContent = "🪙 Цена: " + zone.price + " монет";
-
-  const status = document.createElement("p");
-  status.textContent = zone.unlocked ? "✅ Открыта" : "🔒 Закрыта";
-
-  card.append(title, price, status);
-
-  if (!zone.unlocked) {
-    const button = document.createElement("button");
-    button.textContent = "Открыть территорию";
-    button.disabled = busy || !latestState ||
-      latestState.coins < zone.price;
-    button.addEventListener("click", () => expandZone(zone.level));
-    card.append(button);
-  }
-
-  container.append(card);
-});
-
-
-} catch (error) {
-container.textContent = "Не удалось загрузить территории: " + error.message;
-}
 }
 
 async function expandZone(level) {
