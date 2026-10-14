@@ -265,39 +265,7 @@ async function loadExpansions() {
 
       map.append(card);
     });
-
-    const starter = document.createElement("div");
-    starter.className = "animal";
-    starter.textContent = "🏡 Стартовая территория — открыта";
-    container.append(starter);
-
-    expansions.forEach(zone => {
-      const card = document.createElement("div");
-      card.className = "animal";
-
-      const title = document.createElement("h3");
-      title.textContent = zone.name;
-
-      const price = document.createElement("p");
-      price.textContent = "🪙 Цена: " + zone.price + " монет";
-
-      const status = document.createElement("p");
-      status.textContent = zone.unlocked ? "✅ Открыта" : "🔒 Закрыта";
-
-      card.append(title, price, status);
-
-      if (!zone.unlocked) {
-        const button = document.createElement("button");
-        button.textContent = "Открыть территорию";
-        button.disabled = busy || !latestState || latestState.coins < zone.price;
-        button.addEventListener("click", async () => {
-          await expandZone(Number(zone.level));
-        });
-        card.append(button);
-      }
-
-      container.append(card);
-    });
+    
   } catch (error) {
     console.error("Ошибка loadExpansions:", error);
     container.textContent = "Ошибка загрузки территорий: " + error.message;
