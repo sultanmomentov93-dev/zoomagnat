@@ -249,6 +249,7 @@ class TestDeposit(BaseModel):
     amount: float
 
 
+
 @app.post("/api/test-deposit")
 def test_deposit(
     action: TestDeposit,
@@ -258,28 +259,46 @@ def test_deposit(
     amount = action.amount
 
     if amount <= 0 or amount > 1000:
-        raise HTTPException(400, "Сумма должна быть от 0 до 1000 тестовых USDT")
+        raise HTTPException(
+            400,
+            "Сумма должна быть от 0 до 1000 тестовых USDT",
+        )
 
     cents = round(amount * 100)
     if cents <= 0:
-        raise HTTPException(400, "Минимальная сумма — 0.01 тестового USDT")
+        raise HTTPException(400, "Минимум 0.01 тестового USDT")
 
+    # 1 тестовый USDT = 10 000 игровых монет.
+    coins_to_add = cents * 100
     import time
 
     with db() as c:
+        player = c.execute(
+            "SELECT coins FROM players WHERE user_id=%s FOR UPDATE",
+            (user["id"],),
+        ).fetchone()
+
+        if not player:
+            raise HTTPException(404, "Игрок не найден")
+
         c.execute(
-            """INSERT INTO test_wallets(user_id, test_usdt_cents)
-               VALUES(%s, %s)
-               ON CONFLICT(user_id)
-               DO UPDATE SET test_usdt_cents =
-                   test_wallets.test_usdt_cents + EXCLUDED.test_usdt_cents""",
-            (user["id"], cents),
+            "UPDATE players SET coins = coins + %s WHERE user_id=%s",
+            (coins_to_add, user["id"]),
         )
+
         c.execute(
-            """INSERT INTO test_ledger(user_id, event, amount_cents, created_at)
+            """INSERT INTO test_ledger
+               (user_id, event, amount_cents, created_at)
                VALUES(%s, %s, %s, %s)""",
-            (user["id"], "test_deposit", cents, int(time.time())),
+            (
+                user["id"],
+                "test_usdt_to_coins",
+                cents,
+                int(time.time()),
+            ),
         )
+
+    return get_player(user)
 
     return get_player(user)
 
