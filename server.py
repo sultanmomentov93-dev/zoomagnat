@@ -197,6 +197,17 @@ def get_player(user):
         holdings = c.execute(
             "SELECT animal_key,qty FROM animals WHERE user_id=%s", (uid,)
         ).fetchall()
+        
+        c.execute(
+            """INSERT INTO test_wallets(user_id, test_usdt_cents)
+               VALUES(%s, 0)
+               ON CONFLICT(user_id) DO NOTHING""",
+            (uid,),
+        )
+        wallet = c.execute(
+            "SELECT test_usdt_cents FROM test_wallets WHERE user_id=%s",
+            (uid,),
+        ).fetchone()
 
     
     qty_by_key = {r["animal_key"]: r["qty"] for r in holdings}
@@ -211,6 +222,8 @@ def get_player(user):
         "user_id": uid,
         "name": row["name"],
         "coins": row["coins"],
+        "test_usdt": wallet["test_usdt_cents"] / 100,
+        "exchange_rate": 10000,
         "income_per_minute": total_income,
         "animals": animals,
         "notice": "Игровые монеты не являются криптовалютой и пока не обмениваются на деньги.",
