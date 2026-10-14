@@ -226,6 +226,8 @@ def buy(action: Action, authorization: Optional[str] = Header(default=None)):
 
     info = ANIMALS[key]
     uid = user["id"]
+    import time as timer
+    buy_started = timer.perf_counter()
 
     with db() as c:
         row = c.execute(
@@ -258,6 +260,7 @@ def buy(action: Action, authorization: Optional[str] = Header(default=None)):
     started = timer.perf_counter()
     result = get_player(user)
     print(f"BUY get_player: {timer.perf_counter() - started:.3f}s")
+    print(f"BUY total: {timer.perf_counter() - buy_started:.3f}s")
     return result
 
 
