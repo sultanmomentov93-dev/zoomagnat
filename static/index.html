@@ -148,10 +148,21 @@
   <div class="hero">
     <h1>🦁 ЗооМагнат</h1>
     <div class="subtitle">Построй свой собственный зоопарк!</div>
+    
     <div class="balance">
       <div class="balance-label">ТВОЙ БАЛАНС</div>
       <div class="coins">🪙 <span id="coins">—</span></div>
       <div class="income">💰 Доход: <span id="income">—</span> монет/мин</div>
+
+      <div style="margin-top:18px;padding:14px;background:#203b2a;border:1px solid #47794e;border-radius:14px;">
+        <div class="balance-label">ТЕСТОВЫЙ БАЛАНС (НЕ НАСТОЯЩИЙ USDT)</div>
+        <div style="color:#c9ff8b;font-size:25px;font-weight:bold;margin:8px 0;">
+          🧪 <span id="test-usdt">0.00</span> тест. USDT
+        </div>
+        <div class="income">
+          Курс: 1 тест. USDT = <span id="exchange-rate">10 000</span> игровых монет
+        </div>
+      </div>
     </div>
   </div>
 
@@ -407,6 +418,10 @@ function render(state) {
   latestState = state;
   document.getElementById("coins").textContent = state.coins;
   document.getElementById("income").textContent = state.income_per_minute;
+  document.getElementById("test-usdt").textContent =
+   (Number(state.test_usdt) || 0).toFixed(2);
+  document.getElementById("exchange-rate").textContent =
+   (Number(state.exchange_rate) || 10000).toLocaleString("ru-RU");
 
   const container = document.getElementById("animals");
   container.replaceChildren();
