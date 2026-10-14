@@ -178,11 +178,12 @@ def get_player(user):
             "SELECT animal_key,qty FROM animals WHERE user_id=%s", (uid,)
         ).fetchall()
 
+    
+    qty_by_key = {r["animal_key"]: r["qty"] for r in holdings}
+
     animals = []
     for key, info in ANIMALS.items():
-        qty = next(
-            (r["qty"] for r in holdings if r["animal_key"] == key), 0
-        )
+        qty = qty_by_key.get(key, 0)
         animals.append({"key": key, **info, "qty": qty})
 
     total_income = sum(a["income"] * a["qty"] for a in animals)
