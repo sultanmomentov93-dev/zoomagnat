@@ -254,7 +254,11 @@ def buy(action: Action, authorization: Optional[str] = Header(default=None)):
             (uid, "buy_" + key, -info["price"], int(time.time())),
         )
 
-    return get_player(user)
+    import time as timer
+    started = timer.perf_counter()
+    result = get_player(user)
+    print(f"BUY get_player: {timer.perf_counter() - started:.3f}s")
+    return result
 
 
 @app.get("/api/leaderboard")
