@@ -430,9 +430,6 @@ const amount = Number(amountText);
       Math.round(amount * 10000).toLocaleString("ru-RU") +
       " игровых монет"
     );
-      Math.round(amount * 10000).toLocaleString("ru-RU") +
-      " игровых монет"
-    );
   } catch (error) {
     showMessage("Ошибка обмена: " + error.message);
     await loadGame();
