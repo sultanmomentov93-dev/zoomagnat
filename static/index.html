@@ -474,30 +474,66 @@ async function loadGame() {
     showMessage("Не удалось загрузить игру.\n" + error.message);
   }
 }
-
+  
 async function buy(animalKey) {
-  if (busy) return;
-  busy = true;
+  if (busy || !latestState) return;
 
-  if (latestState) render(latestState);
-  showMessage("Покупаем животное...");
+  const originalState = latestState;
+  const animal = originalState.animals.find(a => a.key === animalKey);
+
+  if (!animal) {
+    showMessage("Животное не найдено.");
+    return;
+  }
+
+  if (originalState.coins < animal.price) {
+    showMessage("Недостаточно монет!");
+    return;
+  }
+
+  // Сразу показываем результат покупки
+  const optimisticState = {
+    ...originalState,
+    coins: originalState.coins - animal.price,
+    income_per_minute:
+      Number(originalState.income_per_minute || 0) +
+      Number(animal.income || 0),
+    animals: originalState.animals.map(a =>
+      a.key === animalKey
+        ? { ...a, qty: Number(a.qty || 0) + 1 }
+        : { ...a }
+    )
+  };
+
+  busy = true;
+  render(optimisticState);
+  showMessage("🛒 Покупаем животное...");
 
   try {
-    const state = await api("/api/buy", "POST", { animal: animalKey });
+    // Сервер по-прежнему сохраняет покупку
+    const state = await api("/api/buy", "POST", {
+      animal: animalKey
+    });
+
     render(state);
     showMessage("✅ Покупка сохранена!");
   } catch (error) {
-    showMessage("Покупка не выполнена.\n" + error.message);
-  } finally {
-    busy = false;
+    // При ошибке возвращаем настоящий баланс с сервера
+    showMessage("Проверяем покупку...");
     try {
       const state = await api("/api/state");
       render(state);
-      await loadExpansions();
-    } catch (error) {
-      showMessage("Не удалось обновить баланс.\n" + error.message);
+      showMessage("ℹ️ " + error.message);
+    } catch (refreshError) {
+      render(originalState);
+      showMessage("Не удалось подтвердить покупку. " + error.message);
     }
+  } finally {
+    busy = false;
+    render(latestState);
   }
+}
+
 }
 
 loadGame();
