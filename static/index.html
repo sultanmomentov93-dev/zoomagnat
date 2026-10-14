@@ -339,22 +339,24 @@ function showMessage(text) {
   document.getElementById("message").textContent = text || "";
 }
 
+
 async function depositTestUSDT() {
   if (busy) return;
   busy = true;
-  showMessage("Начисляем тестовые USDT...");
+  showMessage("Начисляем тестовые монеты...");
 
   try {
     const result = await api("/api/test-deposit", "POST", {
       amount: 10
     });
 
-    render(result);
-    showMessage("✅ Начислено 10 тестовых USDT");
-  } catch (error) {
-    showMessage("Ошибка тестового пополнения: " + error.message);
-  } finally {
     busy = false;
+    render(result);
+    showMessage("✅ Начислено 100 000 игровых монет");
+  } catch (error) {
+    busy = false;
+    await loadGame();
+    showMessage("Ошибка начисления: " + error.message);
   }
 }
 
