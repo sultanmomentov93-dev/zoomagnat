@@ -500,7 +500,8 @@ function render(state) {
 
     const button = document.createElement("button");
     button.textContent = "Купить " + animal.emoji;
-    button.disabled = busy || state.coins < animal.price;
+    button.disabled =
+     busy || Number(state.coins) < Number(animal.price);
     button.addEventListener("click", () => buy(animal.key));
 
     card.append(top, stats, button);
