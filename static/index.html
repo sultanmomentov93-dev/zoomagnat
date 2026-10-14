@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -10,209 +9,137 @@
   <style>
     * { box-sizing: border-box; }
     body {
-      margin: 0;
-      padding: 16px;
-      background: #0b1912;
-      color: #fff;
+      margin: 0; padding: 16px; background: #0b1912; color: #fff;
       font-family: Arial, sans-serif;
     }
     main { max-width: 520px; margin: auto; }
     .hero {
-      padding: 24px 18px;
-      border-radius: 24px;
+      padding: 24px 18px; border-radius: 24px;
       background: linear-gradient(135deg, #28583a, #132c20);
-      border: 1px solid #47794e;
-      text-align: center;
+      border: 1px solid #47794e; text-align: center;
     }
     h1 { color: #c9ff8b; margin: 0 0 8px; font-size: 30px; }
     .subtitle { color: #c5d9c9; font-size: 14px; }
-    .balance {
-      margin-top: 22px;
-      padding: 18px;
-      background: #14271c;
-      border-radius: 18px;
-    }
+    .balance { margin-top: 22px; padding: 18px; background: #14271c; border-radius: 18px; }
     .balance-label { color: #b8cbbb; font-size: 13px; }
     .coins { color: #ffe58a; font-size: 30px; font-weight: bold; margin: 8px 0; }
     .income { color: #b9f27c; font-size: 14px; }
     .section-title { margin: 26px 0 8px; font-size: 21px; }
     .section-note { color: #a9c0af; font-size: 13px; margin-bottom: 14px; }
     .animal {
-      background: #193425;
-      border: 1px solid #31553b;
-      border-radius: 18px;
-      padding: 16px;
-      margin: 12px 0;
+      background: #193425; border: 1px solid #31553b; border-radius: 18px;
+      padding: 16px; margin: 12px 0;
     }
-    .animal-top {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
+    .animal-top { display: flex; align-items: center; gap: 14px; }
     .emoji {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 68px;
-      height: 68px;
-      flex-shrink: 0;
-      background: #294a33;
-      border-radius: 17px;
-      font-size: 40px;
+      display: flex; align-items: center; justify-content: center; width: 68px;
+      height: 68px; flex-shrink: 0; background: #294a33; border-radius: 17px; font-size: 40px;
     }
     .animal h3 { margin: 0 0 7px; font-size: 19px; }
     .owned { color: #b9f27c; font-size: 13px; }
     .stats {
-      display: flex;
-      justify-content: space-between;
-      gap: 8px;
-      margin-top: 15px;
-      padding: 12px;
-      background: #11271a;
-      border-radius: 12px;
-      font-size: 12px;
-      color: #c4d8c9;
+      display: flex; justify-content: space-between; gap: 8px; margin-top: 15px;
+      padding: 12px; background: #11271a; border-radius: 12px; font-size: 12px; color: #c4d8c9;
     }
     .stats strong { color: #fff; display: block; margin-top: 5px; font-size: 14px; }
     button {
-      background: #b9f27c;
-      color: #10251b;
-      border: 0;
-      border-radius: 12px;
-      padding: 14px;
-      font-weight: bold;
-      font-size: 15px;
-      width: 100%;
-      margin-top: 14px;
+      background: #b9f27c; color: #10251b; border: 0; border-radius: 12px;
+      padding: 14px; font-weight: bold; font-size: 15px; width: 100%; margin-top: 14px;
     }
     button:disabled { opacity: .45; }
-    #message {
-      white-space: pre-wrap;
-      overflow-wrap: anywhere;
-      color: #d8e8d9;
-      font-size: 13px;
-      line-height: 1.5;
-    }
+    #message { white-space: pre-wrap; overflow-wrap: anywhere; color: #d8e8d9; font-size: 13px; line-height: 1.5; }
     .info {
-      margin-top: 22px;
-      padding: 16px;
-      border-radius: 16px;
-      background: #17291e;
-      color: #c4d8c9;
-      font-size: 13px;
-      line-height: 1.6;
+      margin-top: 22px; padding: 16px; border-radius: 16px; background: #17291e;
+      color: #c4d8c9; font-size: 13px; line-height: 1.6;
     }
     .info h3 { color: #c9ff8b; margin-top: 0; }
-    
-    /* Карта зоопарка */
+
     .zoo-map {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-      margin: 16px 0;
+      display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px; margin: 16px 0;
     }
-
     .zone-tile {
-      min-height: 125px;
-      padding: 16px 8px;
-      border-radius: 18px;
-      text-align: center;
-      background: linear-gradient(145deg, #244b32, #14291d);
-      border: 1px solid #47794e;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      gap: 8px;
+      min-height: 125px; padding: 16px 8px; border-radius: 18px; text-align: center;
+      background: linear-gradient(145deg, #244b32, #14291d); border: 1px solid #47794e;
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      gap: 8px; background-size: cover; background-position: center; background-repeat: no-repeat;
+      overflow: hidden; position: relative;
     }
-    
-    .zone-tile {
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      overflow: hidden;
-      position: relative;
-    }
-
     .zone-tile[data-zone="1"] {
-      background-image: linear-gradient(#10251b33, #10251bcc),
-        url("https://images.unsplash.com/photo-1472396961693-142e6e269027?auto=format&fit=crop&w=700&q=80");
+      background-image: linear-gradient(#10251b33, #10251bcc), url("https://images.unsplash.com/photo-1472396961693-142e6e269027?auto=format&fit=crop&w=700&q=80");
     }
-
     .zone-tile[data-zone="2"] {
-      background-image: linear-gradient(#10251b33, #10251bcc),
-        url("https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=700&q=80");
+      background-image: linear-gradient(#10251b33, #10251bcc), url("https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=700&q=80");
     }
-
     .zone-tile[data-zone="3"] {
-      background-image: linear-gradient(#10251b33, #10251bcc),
-        url("https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=700&q=80");
+      background-image: linear-gradient(#10251b33, #10251bcc), url("https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=700&q=80");
     }
-
     .zone-tile[data-zone="4"] {
-      background-image: linear-gradient(#10251b33, #10251bcc),
-        url("https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=700&q=80");
+      background-image: linear-gradient(#10251b33, #10251bcc), url("https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=700&q=80");
     }
+    .zone-tile .zone-icon { font-size: 38px; }
+    .zone-tile strong { color: #c9ff8b; font-size: 15px; }
+    .zone-tile span { color: #c5d9c9; font-size: 12px; }
 
-    .zone-tile .zone-icon {
-      font-size: 38px;
+    body.zone-start {
+      background: linear-gradient(#0b1912cc, #0b1912ee), url("https://images.unsplash.com/photo-1472396961693-142e6e269027?auto=format&fit=crop&w=1200&q=80") center / cover fixed;
     }
-
-    .zone-tile strong {
-      color: #c9ff8b;
-      font-size: 15px;
+    body.zone-forest {
+      background: linear-gradient(#071b10aa, #071b10dd), url("https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1200&q=80") center / cover fixed;
     }
-
-    .zone-tile span {
-      color: #c5d9c9;
-      font-size: 12px;
+    body.zone-mountains {
+      background: linear-gradient(#10192399, #101923dd), url("https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80") center / cover fixed;
     }
-/* Фоны игровых территорий */
-body.zone-start {
-background: linear-gradient(#0b1912cc, #0b1912ee),
-url("https://images.unsplash.com/photo-1472396961693-142e6e269027?auto=format&fit=crop&w=1200&q=80")
-center / cover fixed;
-}
+    body.zone-water {
+      background: linear-gradient(#082c3999, #082c39dd), url("https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=1200&q=80") center / cover fixed;
+    }
+    .zone-tile.locked { border-color: #344239; }
+    .zone-tile.locked::after {
+      content: ""; position: absolute; inset: 0; background: #101a1680; pointer-events: none;
+    }
+    .zone-tile .zone-icon, .zone-tile strong, .zone-tile span { position: relative; z-index: 1; }
+    .zone-tile.locked strong { color: #c4d0c6; }
 
-body.zone-forest {
-background: linear-gradient(#071b10aa, #071b10dd),
-url("https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1200&q=80")
-center / cover fixed;
-}
-
-body.zone-mountains {
-background: linear-gradient(#10192399, #101923dd),
-url("https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80")
-center / cover fixed;
-}
-
-body.zone-water {
-background: linear-gradient(#082c3999, #082c39dd),
-url("https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=1200&q=80")
-center / cover fixed;
-}
-
-    .zone-tile.locked {
-  border-color: #344239;
-}
-
-.zone-tile.locked::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: #101a1680;
-  pointer-events: none;
-}
-
-.zone-tile .zone-icon,
-.zone-tile strong,
-.zone-tile span {
-  position: relative;
-  z-index: 1;
-}
-
-    .zone-tile.locked strong {
-      color: #c4d0c6;
+    /* Большая карта зоопарка */
+    .zoo-world {
+      position: relative; min-height: 360px; margin: 16px 0; padding: 18px; overflow: hidden;
+      border: 2px solid #47794e; border-radius: 22px;
+      background: linear-gradient(145deg, #315e38, #183b28 65%, #10291e);
+      box-shadow: inset 0 0 30px #07180c99;
+    }
+    .zoo-world::before {
+      content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .25;
+      background-image: radial-gradient(#c9ff8b 1px, transparent 1px); background-size: 24px 24px;
+    }
+    .zoo-world-title {
+      position: relative; z-index: 1; margin: 0 0 14px;
+      color: #c9ff8b; font-size: 19px;
+    }
+    .zoo-world-zones {
+      position: relative; z-index: 1; display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px;
+    }
+    .zoo-habitat {
+      min-height: 125px; padding: 10px; border: 1px solid #a4ce8b88;
+      border-radius: 16px; background: #0d241bcc;
+    }
+    .zoo-habitat h3 { margin: 0 0 10px; color: #e5ffd1; font-size: 14px; }
+    .zoo-animals { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; }
+    .zoo-creature {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      width: 48px; min-height: 54px; border-radius: 12px; background: #d7edb51c;
+      font-size: 29px; animation: zoo-bob 2.5s ease-in-out infinite;
+    }
+    .zoo-creature small { color: #d5e8d6; font-size: 10px; text-align: center; }
+    .zoo-empty { color: #bdd0bf; font-size: 12px; line-height: 1.5; }
+    @keyframes zoo-bob {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-3px); }
+    }
+    @media (max-width: 360px) {
+      .zoo-world { padding: 12px; }
+      .zoo-world-zones { gap: 8px; }
+      .zoo-habitat { padding: 8px; }
     }
   </style>
 </head>
@@ -232,13 +159,22 @@ center / cover fixed;
   <div class="section-note">Покупай животных и увеличивай доход зоопарка.</div>
   <p id="message">Загружаем твой зоопарк...</p>
   <div id="animals"></div>
-    <section id="territories">
+
+  <section id="territories">
     <h2 class="section-title">🌳 Территории зоопарка</h2>
     <div class="section-note">Расширяй зоопарк и открывай новые зоны!</div>
-      <div id="zoo-map" class="zoo-map"></div>
+
+    <div id="zoo-map" class="zoo-map"></div>
+
+    <h2 class="section-title">🗺️ Большая карта зоопарка</h2>
+    <div class="section-note">Твои купленные животные живут в стартовой зоне.</div>
+    <div id="zoo-world" class="zoo-world">
+      <h3 class="zoo-world-title">🌿 Мой зоопарк</h3>
+      <div id="zoo-world-zones" class="zoo-world-zones"></div>
+    </div>
+
     <div id="expansions"></div>
   </section>
-
 
   <div class="info">
     <h3>🌿 Как развивать зоопарк</h3>
@@ -257,7 +193,6 @@ tg.expand();
 
 let busy = false;
 let latestState = null;
-  
 
 async function loadExpansions() {
   const container = document.getElementById("expansions");
@@ -265,9 +200,7 @@ async function loadExpansions() {
 
   try {
     const data = await api("/api/expansions");
-    const expansions = Array.isArray(data.expansions)
-      ? data.expansions
-      : [];
+    const expansions = Array.isArray(data.expansions) ? data.expansions : [];
 
     container.replaceChildren();
     map.replaceChildren();
@@ -280,12 +213,8 @@ async function loadExpansions() {
     ];
 
     tiles.forEach(tile => {
-      const zone = expansions.find(
-        item => Number(item.level) === tile.level
-      );
-
-      const unlocked =
-        tile.level === 1 || Boolean(zone && zone.unlocked);
+      const zone = expansions.find(item => Number(item.level) === tile.level);
+      const unlocked = tile.level === 1 || Boolean(zone && zone.unlocked);
 
       const card = document.createElement("div");
       card.className = "zone-tile" + (unlocked ? "" : " locked");
@@ -300,9 +229,7 @@ async function loadExpansions() {
       title.textContent = tile.name;
 
       const status = document.createElement("span");
-      status.textContent = unlocked
-        ? "Открыта"
-        : "Закрыта · нажми, чтобы открыть";
+      status.textContent = unlocked ? "Открыта" : "Закрыта · нажми, чтобы открыть";
 
       card.append(icon, title, status);
 
@@ -316,12 +243,8 @@ async function loadExpansions() {
 
         if (unlocked) {
           document.body.classList.remove(
-            "zone-start",
-            "zone-forest",
-            "zone-mountains",
-            "zone-water"
+            "zone-start", "zone-forest", "zone-mountains", "zone-water"
           );
-
           document.body.classList.add(backgrounds[tile.level]);
           showMessage("🌿 Ты перешёл в территорию «" + tile.name + "»!");
           return;
@@ -333,10 +256,7 @@ async function loadExpansions() {
         }
 
         if (!latestState || latestState.coins < zone.price) {
-          showMessage(
-            "🪙 Нужно " + zone.price +
-            " монет для открытия территории «" + tile.name + "»."
-          );
+          showMessage("🪙 Нужно " + zone.price + " монет для открытия территории «" + tile.name + "».");
           return;
         }
 
@@ -362,61 +282,51 @@ async function loadExpansions() {
       price.textContent = "🪙 Цена: " + zone.price + " монет";
 
       const status = document.createElement("p");
-      status.textContent = zone.unlocked
-        ? "✅ Открыта"
-        : "🔒 Закрыта";
+      status.textContent = zone.unlocked ? "✅ Открыта" : "🔒 Закрыта";
 
       card.append(title, price, status);
 
       if (!zone.unlocked) {
         const button = document.createElement("button");
         button.textContent = "Открыть территорию";
-        button.disabled =
-          busy || !latestState || latestState.coins < zone.price;
-
+        button.disabled = busy || !latestState || latestState.coins < zone.price;
         button.addEventListener("click", async () => {
           await expandZone(Number(zone.level));
         });
-
         card.append(button);
       }
 
       container.append(card);
     });
-
   } catch (error) {
     console.error("Ошибка loadExpansions:", error);
-    container.textContent =
-      "Ошибка загрузки территорий: " + error.message;
-    map.textContent =
-      "Ошибка карты: " + error.message;
+    container.textContent = "Ошибка загрузки территорий: " + error.message;
+    map.textContent = "Ошибка карты: " + error.message;
   }
 }
+
 async function expandZone(level) {
-if (busy) return;
-busy = true;
-showMessage("Открываем территорию...");
+  if (busy) return;
+  busy = true;
+  showMessage("Открываем территорию...");
 
-try {
-const result = await api("/api/expand", "POST", { level });
-showMessage("✅ Открыта территория: " + result.name);
-const state = await api("/api/state");
-render(state);
-} catch (error) {
-showMessage("Не удалось открыть территорию: " + error.message);
-} finally {
-busy = false;
-await loadGame();
-await loadExpansions();
+  try {
+    const result = await api("/api/expand", "POST", { level });
+    showMessage("✅ Открыта территория: " + result.name);
+    const state = await api("/api/state");
+    render(state);
+  } catch (error) {
+    showMessage("Не удалось открыть территорию: " + error.message);
+  } finally {
+    busy = false;
+    await loadGame();
+    await loadExpansions();
+  }
 }
-}
-
 
 async function api(path, method = "GET", body = null) {
   const initData = tg.initData;
-  if (!initData) {
-    throw new Error("Открой игру через Telegram кнопкой «Играть».");
-  }
+  if (!initData) throw new Error("Открой игру через Telegram кнопкой «Играть».");
 
   const options = {
     method,
@@ -431,14 +341,87 @@ async function api(path, method = "GET", body = null) {
   const response = await fetch(path, options);
   const data = await response.json().catch(() => ({}));
 
-  if (!response.ok) {
-    throw new Error(data.detail || "Ошибка сервера: " + response.status);
-  }
+  if (!response.ok) throw new Error(data.detail || "Ошибка сервера: " + response.status);
   return data;
 }
 
 function showMessage(text) {
   document.getElementById("message").textContent = text || "";
+}
+
+function renderZooWorld(state) {
+  const container = document.getElementById("zoo-world-zones");
+  if (!container) return;
+
+  container.replaceChildren();
+
+  const habitats = [
+    { name: "🏡 Стартовая зона", animals: [] },
+    { name: "🌲 Лес", animals: [] },
+    { name: "⛰️ Горы", animals: [] },
+    { name: "🌊 Водная зона", animals: [] }
+  ];
+
+  const starter = habitats[0];
+  const animals = Array.isArray(state.animals) ? state.animals : [];
+
+  animals.forEach(animal => {
+    const qty = Math.max(0, Math.floor(Number(animal.qty) || 0));
+    const shown = Math.min(qty, 12);
+
+    for (let i = 0; i < shown; i++) {
+      starter.animals.push({
+        emoji: animal.emoji || "🐾",
+        name: animal.name || "Животное"
+      });
+    }
+
+    if (qty > shown) {
+      starter.animals.push({
+        emoji: "➕",
+        name: "Ещё " + (qty - shown)
+      });
+    }
+  });
+
+  habitats.forEach(habitat => {
+    const panel = document.createElement("section");
+    panel.className = "zoo-habitat";
+
+    const heading = document.createElement("h3");
+    heading.textContent = habitat.name;
+
+    const animalsBox = document.createElement("div");
+    animalsBox.className = "zoo-animals";
+
+    if (habitat.animals.length === 0) {
+      const empty = document.createElement("div");
+      empty.className = "zoo-empty";
+      empty.textContent = habitat === starter
+        ? "Купи животных — они появятся здесь!"
+        : "Эта зона пока пустая.";
+      animalsBox.append(empty);
+    } else {
+      habitat.animals.forEach(animal => {
+        const creature = document.createElement("div");
+        creature.className = "zoo-creature";
+        creature.title = animal.name;
+        creature.setAttribute("aria-label", animal.name);
+
+        const icon = document.createElement("span");
+        icon.textContent = animal.emoji;
+
+        const label = document.createElement("small");
+        label.textContent = animal.name;
+
+        creature.append(icon, label);
+        animalsBox.append(creature);
+      });
+    }
+
+    panel.append(heading, animalsBox);
+    container.append(panel);
+  });
 }
 
 function render(state) {
@@ -449,7 +432,7 @@ function render(state) {
   const container = document.getElementById("animals");
   container.replaceChildren();
 
-  state.animals.forEach(animal => {
+  (Array.isArray(state.animals) ? state.animals : []).forEach(animal => {
     const card = document.createElement("div");
     card.className = "animal";
 
@@ -461,6 +444,7 @@ function render(state) {
     emoji.textContent = animal.emoji;
 
     const details = document.createElement("div");
+
     const title = document.createElement("h3");
     title.textContent = animal.name;
 
@@ -476,12 +460,14 @@ function render(state) {
 
     const price = document.createElement("div");
     price.textContent = "🪙 Цена";
+
     const priceValue = document.createElement("strong");
     priceValue.textContent = animal.price + " монет";
     price.append(priceValue);
 
     const earning = document.createElement("div");
     earning.textContent = "💰 Доход";
+
     const earningValue = document.createElement("strong");
     earningValue.textContent = animal.income + "/мин";
     earning.append(earningValue);
@@ -496,6 +482,8 @@ function render(state) {
     card.append(top, stats, button);
     container.append(card);
   });
+
+  renderZooWorld(state);
 }
 
 async function loadGame() {
@@ -526,7 +514,7 @@ async function buy(animalKey) {
     try {
       const state = await api("/api/state");
       render(state);
-            await loadExpansions();
+      await loadExpansions();
     } catch (error) {
       showMessage("Не удалось обновить баланс.\n" + error.message);
     }
