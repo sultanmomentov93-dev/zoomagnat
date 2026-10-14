@@ -326,6 +326,24 @@ async function api(path, method = "GET", body = null) {
 
 function showMessage(text) {
   document.getElementById("message").textContent = text || "";
+  
+async function depositTestUSDT() {
+  if (busy) return;
+  busy = true;
+
+  try {
+    const result = await api("/api/test-deposit", "POST", {
+      amount: 10
+    });
+
+    render(result);
+    showMessage("✅ Начислено 10 тестовых USDT");
+  } catch (error) {
+    showMessage("Ошибка тестового пополнения: " + error.message);
+  } finally {
+    busy = false;
+  }
+}
 }
 
 function renderZooWorld(state) {
