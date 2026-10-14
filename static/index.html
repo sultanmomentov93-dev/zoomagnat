@@ -169,15 +169,33 @@
           🧪 Получить 10 тестовых USDT
         </button>
         
-        <button
-          onclick="exchangeTestUSDT()"
-          style="margin-top:10px;padding:12px 16px;background:#47794e;color:#ffffff;border:0;border-radius:10px;font-weight:bold;width:100%;"
-        >
-          🔄 Обменять тестовые USDT на монеты
-        </button>
+<div style="margin-top:12px;">
+  <label for="exchange-amount" style="display:block;margin-bottom:8px;color:#ffffff;">
+    Сколько тестовых USDT обменять?
+  </label>
 
+  <input
+    id="exchange-amount"
+    type="number"
+    min="0.01"
+    max="1000"
+    step="0.01"
+    value="1"
+    oninput="updateExchangePreview()"
+    style="width:100%;box-sizing:border-box;padding:12px;border-radius:10px;border:1px solid #47794e;background:#14251a;color:#ffffff;font-size:18px;"
+  >
 
+  <div style="margin-top:10px;color:#c9ff8b;">
+    Получишь монет: <strong id="exchange-preview">10 000</strong>
+  </div>
 
+  <button
+    onclick="exchangeTestUSDT()"
+    style="margin-top:10px;padding:12px 16px;background:#47794e;color:#ffffff;border:0;border-radius:10px;font-weight:bold;width:100%;"
+  >
+    🔄 Обменять на игровые монеты
+  </button>
+</div>
       </div>
     </div>
   </div>
@@ -368,14 +386,27 @@ async function depositTestUSDT() {
     busy = false;
   }
 }
+function updateExchangePreview() {
+  const input = document.getElementById("exchange-amount");
+  const preview = document.getElementById("exchange-preview");
+
+  if (!input || !preview) return;
+
+  const amount = Number(input.value);
+
+  if (!Number.isFinite(amount) || amount <= 0 || amount > 1000) {
+    preview.textContent = "0";
+    return;
+  }
+
+  preview.textContent = Math.round(amount * 10000).toLocaleString("ru-RU");
+}
 
 async function exchangeTestUSDT() {
   if (busy) return;
 
-  const amountText = prompt("Сколько тестовых USDT обменять?");
-  if (amountText === null) return;
-
-  const amount = Number(amountText.replace(",", "."));
+const amountText = document.getElementById("exchange-amount").value;
+const amount = Number(amountText);
 
   if (!Number.isFinite(amount) || amount <= 0 || amount > 1000) {
     showMessage("Введи сумму от 0.01 до 1000 тестовых USDT");
