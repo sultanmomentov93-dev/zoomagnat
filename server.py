@@ -250,6 +250,7 @@ class TestDeposit(BaseModel):
 
 
 
+```python
 @app.post("/api/test-deposit")
 def test_deposit(
     action: TestDeposit,
@@ -268,11 +269,72 @@ def test_deposit(
     if cents <= 0:
         raise HTTPException(400, "Минимум 0.01 тестового USDT")
 
-    # 1 тестовый USDT = 10 000 игровых монет.
-    coins_to_add = cents * 100
     import time
 
     with db() as c:
+        c.execute(
+            """INSERT INTO test_wallets (user_id, test_usdt_cents)
+               VALUES (%s, %s)
+               ON CONFLICT (user_id)
+               DO UPDATE SET test_usdt_cents =
+                   test_wallets.test_usdt_cents + EXCLUDED.test_usdt_cents""",
+            (user["id"], cents),
+        )
+
+        c.execute(
+            """INSERT INTO test_ledger
+               (user_id, event, amount_cents, created_at)
+               VALUES (%s, %s, %s, %s)""",
+            (
+                user["id"],
+                "test_usdt_faucet",
+                cents,
+                int(time.time()),
+            ),
+        )
+
+    return get_player(user)
+    
+class TestExchange(BaseModel):
+    amount: float
+    
+class Action(BaseModel):
+    animal: str
+
+
+@app.post("/api/test-exchange")
+def test_exchange(
+    action: TestExchange,
+    authorization: Optional[str] = Header(default=None),
+):
+    user = auth(authorization)
+    amount = action.amount
+
+    if amount <= 0 or amount > 1000:
+        raise HTTPException(
+            400,
+            "Сумма должна быть от 0 до 1000 тестовых USDT",
+        )
+
+    cents = round(amount * 100)
+    if cents <= 0:
+        raise HTTPException(400, "Минимум 0.01 тестового USDT")
+
+    import time
+
+    with db() as c:
+        wallet = c.execute(
+            """SELECT test_usdt_cents FROM test_wallets
+               WHERE user_id=%s FOR UPDATE""",
+            (user["id"],),
+        ).fetchone()
+
+        if not wallet or wallet["test_usdt_cents"] < cents:
+            raise HTTPException(
+                400,
+                "Недостаточно тестовых USDT",
+            )
+
         player = c.execute(
             "SELECT coins FROM players WHERE user_id=%s FOR UPDATE",
             (user["id"],),
@@ -280,6 +342,15 @@ def test_deposit(
 
         if not player:
             raise HTTPException(404, "Игрок не найден")
+
+        coins_to_add = cents * 100
+
+        c.execute(
+            """UPDATE test_wallets
+               SET test_usdt_cents = test_usdt_cents - %s
+               WHERE user_id=%s""",
+            (cents, user["id"]),
+        )
 
         c.execute(
             "UPDATE players SET coins = coins + %s WHERE user_id=%s",
@@ -293,19 +364,12 @@ def test_deposit(
             (
                 user["id"],
                 "test_usdt_to_coins",
-                cents,
+                -cents,
                 int(time.time()),
             ),
         )
 
     return get_player(user)
-
-    return get_player(user)
-
-
-class Action(BaseModel):
-    animal: str
-
 
 @app.post("/api/buy")
 def buy(action: Action, authorization: Optional[str] = Header(default=None)):
