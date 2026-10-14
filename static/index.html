@@ -334,12 +334,15 @@ async function api(path, method = "GET", body = null) {
   return data;
 }
 
+
 function showMessage(text) {
   document.getElementById("message").textContent = text || "";
-  
+}
+
 async function depositTestUSDT() {
   if (busy) return;
   busy = true;
+  showMessage("Начисляем тестовые USDT...");
 
   try {
     const result = await api("/api/test-deposit", "POST", {
@@ -353,7 +356,6 @@ async function depositTestUSDT() {
   } finally {
     busy = false;
   }
-}
 }
 
 function renderZooWorld(state) {
