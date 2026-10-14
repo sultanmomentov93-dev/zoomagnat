@@ -423,9 +423,13 @@ const amount = Number(amountText);
       amount: amount
     });
 
+    busy = false;
     render(result);
     showMessage(
       "✅ Обмен выполнен! Начислено " +
+      Math.round(amount * 10000).toLocaleString("ru-RU") +
+      " игровых монет"
+    );
       Math.round(amount * 10000).toLocaleString("ru-RU") +
       " игровых монет"
     );
