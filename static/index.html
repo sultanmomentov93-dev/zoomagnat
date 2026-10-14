@@ -377,8 +377,10 @@ async function depositTestUSDT() {
       amount: 10
     });
 
+    busy = false;
     render(result);
     showMessage("✅ Начислено 10 тестовых USDT");
+
   } catch (error) {
     showMessage("Ошибка начисления: " + error.message);
     await loadGame();
