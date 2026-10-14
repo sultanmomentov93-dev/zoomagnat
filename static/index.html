@@ -339,24 +339,59 @@ function showMessage(text) {
   document.getElementById("message").textContent = text || "";
 }
 
-
 async function depositTestUSDT() {
   if (busy) return;
+
   busy = true;
-  showMessage("Начисляем тестовые монеты...");
+  showMessage("Начисляем тестовые USDT...");
 
   try {
     const result = await api("/api/test-deposit", "POST", {
       amount: 10
     });
 
-    busy = false;
     render(result);
-    showMessage("✅ Начислено 100 000 игровых монет");
+    showMessage("✅ Начислено 10 тестовых USDT");
   } catch (error) {
-    busy = false;
-    await loadGame();
     showMessage("Ошибка начисления: " + error.message);
+    await loadGame();
+  } finally {
+    busy = false;
+  }
+}
+
+async function exchangeTestUSDT() {
+  if (busy) return;
+
+  const amountText = prompt("Сколько тестовых USDT обменять?");
+  if (amountText === null) return;
+
+  const amount = Number(amountText.replace(",", "."));
+
+  if (!Number.isFinite(amount) || amount <= 0 || amount > 1000) {
+    showMessage("Введи сумму от 0.01 до 1000 тестовых USDT");
+    return;
+  }
+
+  busy = true;
+  showMessage("Обмениваем тестовые USDT...");
+
+  try {
+    const result = await api("/api/test-exchange", "POST", {
+      amount: amount
+    });
+
+    render(result);
+    showMessage(
+      "✅ Обмен выполнен! Начислено " +
+      Math.round(amount * 10000).toLocaleString("ru-RU") +
+      " игровых монет"
+    );
+  } catch (error) {
+    showMessage("Ошибка обмена: " + error.message);
+    await loadGame();
+  } finally {
+    busy = false;
   }
 }
 
