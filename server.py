@@ -248,9 +248,6 @@ def state(authorization: Optional[str] = Header(default=None)):
 class TestDeposit(BaseModel):
     amount: float
 
-
-
-```python
 @app.post("/api/test-deposit")
 def test_deposit(
     action: TestDeposit,
