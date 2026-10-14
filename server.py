@@ -244,6 +244,44 @@ def index():
 @app.get("/api/state")
 def state(authorization: Optional[str] = Header(default=None)):
     return get_player(auth(authorization))
+    
+class TestDeposit(BaseModel):
+    amount: float
+
+
+@app.post("/api/test-deposit")
+def test_deposit(
+    action: TestDeposit,
+    authorization: Optional[str] = Header(default=None),
+):
+    user = auth(authorization)
+    amount = action.amount
+
+    if amount <= 0 or amount > 1000:
+        raise HTTPException(400, "Сумма должна быть от 0 до 1000 тестовых USDT")
+
+    cents = round(amount * 100)
+    if cents <= 0:
+        raise HTTPException(400, "Минимальная сумма — 0.01 тестового USDT")
+
+    import time
+
+    with db() as c:
+        c.execute(
+            """INSERT INTO test_wallets(user_id, test_usdt_cents)
+               VALUES(%s, %s)
+               ON CONFLICT(user_id)
+               DO UPDATE SET test_usdt_cents =
+                   test_wallets.test_usdt_cents + EXCLUDED.test_usdt_cents""",
+            (user["id"], cents),
+        )
+        c.execute(
+            """INSERT INTO test_ledger(user_id, event, amount_cents, created_at)
+               VALUES(%s, %s, %s, %s)""",
+            (user["id"], "test_deposit", cents, int(time.time())),
+        )
+
+    return get_player(user)
 
 
 class Action(BaseModel):
