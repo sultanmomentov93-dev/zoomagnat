@@ -884,8 +884,22 @@ function render(state) {
     top.className = "animal-top";
 
     const emoji = document.createElement("div");
-    emoji.className = "emoji";
-    emoji.textContent = animal.emoji;
+emoji.className = "emoji";
+
+const animalImage = document.createElement("img");
+animalImage.src = animal.image || "";
+animalImage.alt = animal.name || "Животное";
+animalImage.style.width = "100%";
+animalImage.style.height = "100%";
+animalImage.style.objectFit = "cover";
+animalImage.style.borderRadius = "17px";
+
+if (animal.image) {
+emoji.append(animalImage);
+} else {
+emoji.textContent = animal.emoji || "🐾";
+}
+
 
     const details = document.createElement("div");
 
