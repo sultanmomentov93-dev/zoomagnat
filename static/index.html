@@ -757,6 +757,27 @@ async function api(path, method = "GET", body = null) {
 function showMessage(text) {
   document.getElementById("message").textContent = text || "";
 }
+function showCoinEffect() {
+const coins = ["🪙", "✨", "🪙", "💰", "✨"];
+const card = document.querySelector(".animal:active") ||
+document.querySelector(".animal");
+
+if (!card) return;
+
+const rect = card.getBoundingClientRect();
+
+coins.forEach((symbol, index) => {
+const coin = document.createElement("span");
+coin.className = "coin-pop";
+coin.textContent = symbol;
+coin.style.left = (rect.left + rect.width / 2 + (index - 2) * 22) + "px";
+coin.style.top = (rect.top + rect.height / 2) + "px";
+document.body.append(coin);
+
+coin.addEventListener("animationend", () => coin.remove(), { once: true });
+
+});
+}
 
 async function depositTestUSDT() {
   if (busy) return;
