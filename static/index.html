@@ -899,11 +899,12 @@ animalImage.style.height = "100%";
 animalImage.style.objectFit = "cover";
 animalImage.style.borderRadius = "17px";
 
-if (animal.image) {
+if (animalImage.src) {
 emoji.append(animalImage);
 } else {
 emoji.textContent = animal.emoji || "🐾";
 }
+
 
 
     const details = document.createElement("div");
