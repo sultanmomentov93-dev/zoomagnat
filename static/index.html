@@ -273,17 +273,31 @@ h1 {
 }
 
 .stats {
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-  margin-top: 13px;
-  padding: 11px 9px;
-  background: #061b12;
-  border: 1px solid #28543a;
-  border-radius: 12px;
-  font-size: 11px;
-  color: var(--muted);
+display: grid;
+grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+align-items: start;
+gap: 8px;
+margin-top: 13px;
+padding: 11px 9px;
+background: #061b12;
+border: 1px solid #28543a;
+border-radius: 12px;
+font-size: 11px;
+color: var(--muted);
 }
+
+.stats > div {
+min-width: 0;
+}
+
+.stats strong {
+display: block;
+margin-top: 5px;
+font-size: 12px;
+line-height: 1.35;
+overflow-wrap: anywhere;
+}
+
 
 .stats > div {
   min-width: 0;
