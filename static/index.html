@@ -55,8 +55,13 @@
      flex-shrink: 0;
     }
      .animal:active {
-      transform: scale(0.98);
-     box-shadow: 0 3px 10px #0005;
+     transform: scale(0.98);
+     border-color: #ffe08a;
+     box-shadow:
+     0 0 12px #e7bd55aa,
+     0 0 28px #e7bd5544,
+     inset 0 0 12px #e7bd5522;
+     transition: transform .15s ease, box-shadow .15s ease;
     }
     .stats strong { color: #fff; display: block; margin-top: 5px; font-size: 14px; }
     
