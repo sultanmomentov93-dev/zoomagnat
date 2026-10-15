@@ -1076,6 +1076,7 @@ async function buy(animalKey) {
 
     render(state);
     showMessage("✅ Покупка сохранена! 🪙✨");
+    showCoinEffect();
   } catch (error) {
     // При ошибке возвращаем настоящий баланс с сервера
     showMessage("Проверяем покупку...");
