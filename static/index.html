@@ -54,6 +54,28 @@
      margin-top: auto;
      flex-shrink: 0;
     }
+    .coin-pop {
+      position: fixed;
+      z-index: 9999;
+      pointer-events: none;
+      font-size: 28px;
+      animation: coinFly 900ms ease-out forwards;
+    }
+
+      @keyframes coinFly {
+      0% {
+      opacity: 0;
+      transform: translateY(10px) scale(.6) rotate(0deg);
+    }
+     20% {
+     opacity: 1;
+    }
+     100% {
+     opacity: 0;
+     transform: translateY(-90px) scale(1.2) rotate(25deg);
+    }
+   }
+
      .animal:active {
      transform: scale(0.98);
      border-color: #ffe08a;
