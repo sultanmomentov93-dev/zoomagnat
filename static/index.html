@@ -887,7 +887,12 @@ function render(state) {
 emoji.className = "emoji";
 
 const animalImage = document.createElement("img");
-animalImage.src = animal.image || "";
+animalImage.src = animal.image || ({
+  "Кролик": "https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?w=400",
+  "Лиса": "https://images.unsplash.com/photo-1474511320723-9a56873867b5?w=400",
+  "Олень": "https://images.unsplash.com/photo-1484406566174-9da000fda645?w=400",
+  "Лев": "https://images.unsplash.com/photo-1546182990-dffeafbe841d?w=400"
+}[animal.name] || "");
 animalImage.alt = animal.name || "Животное";
 animalImage.style.width = "100%";
 animalImage.style.height = "100%";
