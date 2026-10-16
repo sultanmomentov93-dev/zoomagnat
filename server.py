@@ -109,7 +109,13 @@ def init_db():
                 CHECK (invitee_id <> inviter_id)
             )
         """)
-
+        c.execute("""
+            CREATE TABLE IF NOT EXISTS daily_rewards(
+                user_id BIGINT PRIMARY KEY,
+                streak INTEGER NOT NULL DEFAULT 0,
+                last_claim_date DATE
+            )
+        """)
 
 @app.on_event("startup")
 def startup():
@@ -509,6 +515,124 @@ def leaderboard(authorization: Optional[str] = Header(default=None)):
             LIMIT 10
         """).fetchall()
     return [{"name": r["name"], "score": r["score"]} for r in rows]
+    
+from datetime import datetime, timezone, timedelta
+
+DAILY_REWARDS = [100, 200, 300, 400, 500, 700, 1000]
+
+
+@app.get("/api/daily-rewards")
+def get_daily_rewards(
+    authorization: Optional[str] = Header(default=None),
+):
+    user = auth(authorization)
+    uid = user["id"]
+    today = datetime.now(timezone.utc).date()
+
+    with db() as c:
+        c.execute(
+            """INSERT INTO daily_rewards(user_id, streak, last_claim_date)
+               VALUES(%s, 0, NULL)
+               ON CONFLICT(user_id) DO NOTHING""",
+            (uid,),
+        )
+        row = c.execute(
+            """SELECT streak, last_claim_date
+               FROM daily_rewards WHERE user_id=%s""",
+            (uid,),
+        ).fetchone()
+
+    last_date = row["last_claim_date"]
+    claimed_today = last_date == today
+
+    if claimed_today:
+        next_day = row["streak"] % 7 + 1
+    elif last_date == today - timedelta(days=1):
+        next_day = row["streak"] % 7 + 1
+    else:
+        next_day = 1
+
+    return {
+        "claimed_today": claimed_today,
+        "streak": row["streak"],
+        "next_day": next_day,
+        "next_reward": DAILY_REWARDS[next_day - 1],
+        "rewards": DAILY_REWARDS,
+    }
+
+
+@app.post("/api/daily-rewards/claim")
+def claim_daily_reward(
+    authorization: Optional[str] = Header(default=None),
+):
+    user = auth(authorization)
+    uid = user["id"]
+    today = datetime.now(timezone.utc).date()
+    now = int(time.time())
+
+    with db() as c:
+        c.execute(
+            """INSERT INTO daily_rewards(user_id, streak, last_claim_date)
+               VALUES(%s, 0, NULL)
+               ON CONFLICT(user_id) DO NOTHING""",
+            (uid,),
+        )
+
+        row = c.execute(
+            """SELECT streak, last_claim_date
+               FROM daily_rewards WHERE user_id=%s FOR UPDATE""",
+            (uid,),
+        ).fetchone()
+
+        last_date = row["last_claim_date"]
+
+        if last_date == today:
+            return {
+                "ok": False,
+                "claimed_today": True,
+                "message": "Ты уже получил награду сегодня. Возвращайся завтра!",
+            }
+
+        if last_date == today - timedelta(days=1):
+            day = row["streak"] % 7 + 1
+        else:
+            day = 1
+
+        reward = DAILY_REWARDS[day - 1]
+
+        player = c.execute(
+            "SELECT user_id FROM players WHERE user_id=%s FOR UPDATE",
+            (uid,),
+        ).fetchone()
+
+        if player is None:
+            raise HTTPException(401, "Сначала открой игру")
+
+        c.execute(
+            """UPDATE players SET coins=coins+%s WHERE user_id=%s""",
+            (reward, uid),
+        )
+
+        c.execute(
+            """UPDATE daily_rewards
+               SET streak=%s, last_claim_date=%s
+               WHERE user_id=%s""",
+            (day, today, uid),
+        )
+
+        c.execute(
+            """INSERT INTO ledger(user_id,event,amount,created_at)
+               VALUES(%s,%s,%s,%s)""",
+            (uid, "daily_reward_day_" + str(day), reward, now),
+        )
+
+    return {
+        "ok": True,
+        "claimed_today": True,
+        "day": day,
+        "reward": reward,
+        "message": f"🎉 День {day}! Ты получил {reward} монет!",
+    }
 
 
 @app.get("/api/health")
