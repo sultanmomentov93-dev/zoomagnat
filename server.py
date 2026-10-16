@@ -98,6 +98,16 @@ def init_db():
                 created_at BIGINT NOT NULL
             )
         """)
+        
+        c.execute("""
+            CREATE TABLE IF NOT EXISTS referrals(
+                invitee_id BIGINT PRIMARY KEY,
+                inviter_id BIGINT NOT NULL,
+                bonus BIGINT NOT NULL DEFAULT 100,
+                created_at BIGINT NOT NULL,
+                CHECK (invitee_id <> inviter_id)
+            )
+        """)
 
 
 @app.on_event("startup")
