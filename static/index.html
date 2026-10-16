@@ -1636,6 +1636,7 @@ async function claimDailyReward() {
       status.textContent = data.message || "Награда уже получена сегодня.";
     } else {
       status.textContent = data.message;
+      playDailyRewardAnimation();
     }
 
     await loadDailyRewards();
