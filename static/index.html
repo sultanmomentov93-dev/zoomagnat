@@ -1215,6 +1215,70 @@ function closeFriendsPage() {
   document.getElementById("animals").style.display = "";
   document.getElementById("message").style.display = "";
 }
+  
+async function loadReferrals() {
+  const list = document.getElementById("referral-list");
+  const count = document.getElementById("referral-count");
+  const total = document.getElementById("referral-total");
+
+  list.textContent = "Загрузка списка друзей...";
+
+  try {
+    const initData = window.Telegram?.WebApp?.initData;
+
+    if (!initData) {
+      list.textContent = "Открой игру через Telegram, чтобы увидеть друзей.";
+      return;
+    }
+
+    const response = await fetch("/api/referrals", {
+      headers: {
+        Authorization: "tma " + initData
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error("Не удалось загрузить друзей");
+    }
+
+    const data = await response.json();
+
+    count.textContent = data.count;
+    total.textContent = data.total_bonus;
+
+    list.replaceChildren();
+
+    if (!data.referrals.length) {
+      list.textContent = "Пока нет приглашённых друзей. Пригласи первого!";
+      return;
+    }
+
+    data.referrals.forEach(friend => {
+      const item = document.createElement("div");
+      item.style.cssText =
+        "padding:10px;margin-top:8px;background:#203b2a;border-radius:10px;";
+
+      const name = document.createElement("div");
+      name.textContent = "👤 " + (friend.name || "Игрок");
+
+      const bonus = document.createElement("div");
+      bonus.style.color = "#c9ff8b";
+      bonus.textContent = "🪙 Бонус: " + friend.bonus + " монет";
+
+      const date = document.createElement("div");
+      date.style.cssText = "font-size:12px;color:#b5c8b8;margin-top:4px;";
+      date.textContent = new Date(
+        Number(friend.created_at) * 1000
+      ).toLocaleDateString("ru-RU");
+
+      item.append(name, bonus, date);
+      list.appendChild(item);
+    });
+  } catch (error) {
+    list.textContent = "Не удалось загрузить друзей. Попробуй ещё раз.";
+    console.error(error);
+  }
+}
 </script>
 </body>
 </html>
