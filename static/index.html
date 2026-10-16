@@ -1470,21 +1470,109 @@ async function loadDailyRewards() {
 
     const rewards = data.rewards || [100, 200, 300, 400, 500, 700, 1000];
 
+    
+    const rewards = data.rewards || [100, 200, 300, 400, 500, 700, 1000];
+    const nextDay = Number(data.next_day || 1);
+    const streak = Number(data.streak || 0);
+    const claimedToday = Boolean(data.claimed_today);
+
     status.innerHTML = `
-      <p>🔥 Твоя серия: <b>${data.streak || 0}</b> дней</p>
-      <p>${data.claimed_today
-        ? "✅ Сегодня награда уже получена."
-        : `🎁 Следующая награда: <b>${data.next_reward}</b> монет (день ${data.next_day})`}
+      <p style="margin:0 0 8px;font-size:17px;line-height:1.5;">
+        Заходи каждый день и получай игровые монеты!
       </p>
-      <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;">
-        ${rewards.map((amount, i) => `
-          <div style="padding:10px;background:#172b20;border-radius:10px;">
-            ${i + 1 === 7 ? "🏆" : "🎁"} День ${i + 1}<br>
-            <b>${amount} монет</b>
-            ${data.claimed_today && i + 1 === data.streak ? "<br>✅ Получено" : ""}
+
+      <div style="
+        display:flex;align-items:center;justify-content:space-between;
+        gap:10px;margin:18px 0;padding:14px;
+        background:linear-gradient(135deg,#315b3d,#203b2a);
+        border:1px solid #75a86c;border-radius:16px;
+      ">
+        <div>
+          <div style="font-size:13px;color:#c5e6b7;">ТВОЯ СЕРИЯ</div>
+          <div style="font-size:23px;font-weight:800;color:#fff;">
+            🔥 ${streak} ${streak === 1 ? "день" : streak >= 2 && streak <= 4 ? "дня" : "дней"}
           </div>
-        `).join("")}
+        </div>
+        <div style="font-size:36px;">🎁</div>
       </div>
+
+      <div style="
+        display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+        gap:10px;margin-top:16px;
+      ">
+        ${rewards.map((amount, i) => {
+          const day = i + 1;
+          const received = claimedToday ? day <= streak : day < nextDay;
+          const current = !claimedToday && day === nextDay;
+          const finalDay = day === 7;
+
+          const background = received
+            ? "linear-gradient(145deg,#315f3d,#24452f)"
+            : current
+              ? "linear-gradient(145deg,#fff0b3,#ffd76a)"
+              : "linear-gradient(145deg,#20392b,#192d22)";
+
+          const color = current ? "#253a22" : "#ffffff";
+          const border = received
+            ? "#76b878"
+            : current
+              ? "#fff0b3"
+              : "#365541";
+
+          return `
+            <div style="
+              position:relative;min-width:0;box-sizing:border-box;
+              padding:14px 12px;border-radius:16px;
+              background:${background};color:${color};
+              border:1px solid ${border};
+              box-shadow:${current
+                ? "0 0 0 2px rgba(255,215,106,.2)"
+                : "0 3px 8px rgba(0,0,0,.12)"};
+            ">
+              <div style="
+                display:flex;align-items:center;justify-content:space-between;
+                gap:4px;margin-bottom:12px;
+              ">
+                <span style="font-size:14px;font-weight:700;">
+                  ДЕНЬ ${day}
+                </span>
+                <span style="font-size:24px;">
+                  ${received ? "✅" : finalDay ? "🏆" : current ? "🎁" : "🔒"}
+                </span>
+              </div>
+
+              <div style="
+                font-size:clamp(17px,4.5vw,23px);
+                font-weight:800;line-height:1.25;overflow-wrap:anywhere;
+              ">
+                ${amount.toLocaleString("ru-RU")}
+              </div>
+              <div style="font-size:13px;margin-top:2px;opacity:.9;">
+                монет
+              </div>
+
+              <div style="
+                margin-top:12px;padding:6px 5px;border-radius:9px;
+                text-align:center;font-size:12px;font-weight:800;
+                background:${received
+                  ? "rgba(160,235,153,.16)"
+                  : current
+                    ? "rgba(255,255,255,.45)"
+                    : "rgba(0,0,0,.16)"};
+              ">
+                ${received ? "✓ ПОЛУЧЕНО" : current ? "ТВОЙ ДЕНЬ" : "СКОРО"}
+              </div>
+            </div>
+          `;
+        }).join("")}
+      </div>
+
+      <p style="
+        margin:16px 0 0;text-align:center;
+        color:#c5e6b7;font-size:13px;line-height:1.5;
+      ">
+        🎯 Собери серию из 7 дней и получи 1 000 монет!
+      </p>
     `;
 
     button.disabled = Boolean(data.claimed_today);
