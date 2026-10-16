@@ -638,6 +638,42 @@ grid-template-columns: 1fr;
     </button>
   </div>
 </div>
+  
+<div style="margin:18px 0;">
+  <button
+    onclick="openDailyRewardsPage()"
+    style="width:100%;padding:15px;background:#c9ff8b;color:#18301d;border:0;border-radius:14px;font-size:17px;font-weight:bold;"
+  >
+    🎁 Ежедневные награды
+  </button>
+</div>
+
+<div id="daily-rewards-page" style="display:none;">
+  <h2 class="section-title">🎁 Ежедневные награды</h2>
+
+  <div style="padding:16px;background:#203b2a;border:1px solid #47794e;border-radius:14px;color:white;">
+    <p>Заходи каждый день и получай игровые монеты!</p>
+
+    <div id="daily-rewards-status" style="margin:14px 0;">
+      Загружаем награды...
+    </div>
+
+    <button
+      id="daily-rewards-claim"
+      onclick="claimDailyReward()"
+      style="width:100%;padding:14px;background:#c9ff8b;color:#18301d;border:0;border-radius:12px;font-size:16px;font-weight:bold;"
+    >
+      🎁 Получить награду
+    </button>
+
+    <button
+      onclick="closeDailyRewardsPage()"
+      style="width:100%;margin-top:14px;padding:12px;background:#47794e;color:white;border:0;border-radius:12px;font-weight:bold;"
+    >
+      ⬅️ Назад в зоопарк
+    </button>
+  </div>
+</div>
 
 <div id="friends-page" style="display:none;">
   <h2 class="section-title">👥 Мои друзья</h2>
