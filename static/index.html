@@ -595,7 +595,39 @@ grid-template-columns: 1fr;
       </div>
     </div>
   </div>
+   <div style="margin:18px 0;">
+  <button
+    onclick="openFriendsPage()"
+    style="width:100%;padding:15px;background:#c9ff8b;color:#18301d;border:0;border-radius:14px;font-size:17px;font-weight:bold;"
+  >
+    👥 Мои друзья
+  </button>
+</div>
 
+<div id="friends-page" style="display:none;">
+  <h2 class="section-title">👥 Мои друзья</h2>
+
+  <div style="padding:16px;background:#203b2a;border:1px solid #47794e;border-radius:14px;">
+    <p>Приглашай друзей в ЗооМагнат!</p>
+    <p>🪙 Приглашай новых игроков и получай бонусы.</p>
+
+    <button
+      onclick="inviteFriends()"
+      style="width:100%;padding:14px;background:#c9ff8b;color:#18301d;border:0;border-radius:12px;font-size:16px;font-weight:bold;"
+    >
+      📩 Пригласить друга
+    </button>
+
+    <div id="referral-message" style="margin-top:12px;color:#c9ff8b;overflow-wrap:anywhere;"></div>
+
+    <button
+      onclick="closeFriendsPage()"
+      style="width:100%;margin-top:14px;padding:12px;background:#47794e;color:white;border:0;border-radius:12px;font-weight:bold;"
+    >
+      ⬅️ Назад в зоопарк
+    </button>
+  </div>
+</div>
   <h2 class="section-title">🐾 Твои животные</h2>
   <div class="section-note">Покупай животных и увеличивай доход зоопарка.</div>
   <p id="message">Загружаем твой зоопарк...</p>
