@@ -1169,6 +1169,37 @@ function inviteFriends() {
     );
   }
 }
+  function openFriendsPage() {
+  document.getElementById("friends-page").style.display = "block";
+
+  document.querySelectorAll(".hero, #territories").forEach(el => {
+    el.style.display = "none";
+  });
+
+  document.querySelectorAll(".section-title").forEach(el => {
+    if (!el.closest("#friends-page")) {
+      el.style.display = "none";
+    }
+  });
+
+  document.getElementById("animals").style.display = "none";
+  document.getElementById("message").style.display = "none";
+}
+
+function closeFriendsPage() {
+  document.getElementById("friends-page").style.display = "none";
+
+  document.querySelectorAll(".hero, #territories").forEach(el => {
+    el.style.display = "";
+  });
+
+  document.querySelectorAll(".section-title").forEach(el => {
+    el.style.display = "";
+  });
+
+  document.getElementById("animals").style.display = "";
+  document.getElementById("message").style.display = "";
+}
 </script>
 </body>
 </html>
