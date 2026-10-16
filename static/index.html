@@ -603,6 +603,41 @@ grid-template-columns: 1fr;
     👥 Мои друзья
   </button>
 </div>
+  
+<div style="margin:18px 0;">
+  <button
+    onclick="openLeaderboardPage()"
+    style="width:100%;padding:15px;background:#c9ff8b;color:#18301d;border:0;border-radius:14px;font-size:17px;font-weight:bold;"
+  >
+    🏆 Рейтинг игроков
+  </button>
+</div>
+
+<div id="leaderboard-page" style="display:none;">
+  <h2 class="section-title">🏆 Рейтинг игроков</h2>
+
+  <div style="padding:16px;background:#203b2a;border:1px solid #47794e;border-radius:14px;color:white;">
+    <p>Топ-10 игроков по игровому счёту</p>
+
+    <button
+      onclick="loadLeaderboard()"
+      style="width:100%;padding:12px;background:#c9ff8b;color:#18301d;border:0;border-radius:12px;font-weight:bold;"
+    >
+      🔄 Обновить рейтинг
+    </button>
+
+    <div id="leaderboard-list" style="margin-top:14px;">
+      Нажми «Обновить рейтинг».
+    </div>
+
+    <button
+      onclick="closeLeaderboardPage()"
+      style="width:100%;margin-top:14px;padding:12px;background:#47794e;color:white;border:0;border-radius:12px;font-weight:bold;"
+    >
+      ⬅️ Назад в зоопарк
+    </button>
+  </div>
+</div>
 
 <div id="friends-page" style="display:none;">
   <h2 class="section-title">👥 Мои друзья</h2>
