@@ -532,7 +532,46 @@ font-size: 11px;
 #animals {
 grid-template-columns: 1fr;
 }
-} </style>
+}
+    
+/* Анимация карточки ежедневной награды */
+@keyframes dailyCardGlow {
+  0%   { transform: scale(1); box-shadow: 0 0 0 rgba(255,215,106,0); }
+  50%  { transform: scale(1.035); box-shadow: 0 0 24px rgba(255,215,106,.65); }
+  100% { transform: scale(1); box-shadow: 0 0 10px rgba(255,215,106,.2); }
+}
+
+@keyframes dailyCoinFly {
+  0% {
+    opacity: 0;
+    transform: translate(0, 10px) scale(.5) rotate(0deg);
+  }
+  20% { opacity: 1; }
+  100% {
+    opacity: 0;
+    transform: translate(var(--coin-x), -100px) scale(1.3) rotate(180deg);
+  }
+}
+
+.daily-reward-card-active {
+  animation: dailyCardGlow .8s ease-in-out 2;
+}
+
+.daily-reward-coin {
+  position: fixed;
+  z-index: 99999;
+  pointer-events: none;
+  font-size: 27px;
+  animation: dailyCoinFly 1.2s ease-out forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .daily-reward-card-active,
+  .daily-reward-coin {
+    animation: none !important;
+  }
+}
+</style>
 
 </head>
 <body>
