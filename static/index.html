@@ -1467,9 +1467,6 @@ async function loadDailyRewards() {
 
   try {
     const data = await api("/api/daily-rewards");
-
-    const rewards = data.rewards || [100, 200, 300, 400, 500, 700, 1000];
-
     
     const rewards = data.rewards || [100, 200, 300, 400, 500, 700, 1000];
     const nextDay = Number(data.next_day || 1);
