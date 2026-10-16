@@ -1186,6 +1186,7 @@ function inviteFriends() {
 }
   function openFriendsPage() {
   document.getElementById("friends-page").style.display = "block";
+  loadReferrals();
 
   document.querySelectorAll(".hero, #territories").forEach(el => {
     el.style.display = "none";
