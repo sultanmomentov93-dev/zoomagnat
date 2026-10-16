@@ -18,6 +18,7 @@ from pydantic import BaseModel
 BASE = Path(__file__).resolve().parent
 DATABASE_URL = os.getenv("DATABASE_URL", "").strip()
 BOT_TOKEN = os.getenv("BOT_TOKEN", "").strip()
+REFERRAL_SECRET = os.getenv("REFERRAL_SECRET", "").strip()
 
 app = FastAPI(title="ZooMagnat MVP")
 app.mount("/static", StaticFiles(directory=BASE / "static"), name="static")
