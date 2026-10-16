@@ -266,6 +266,39 @@ def get_player(user, referral_id=None):
         "animals": animals,
         "notice": "Игровые монеты не являются криптовалютой и пока не обмениваются на деньги.",
     }
+    
+@app.get("/api/referrals")
+def get_referrals(authorization: Optional[str] = Header(default=None)):
+    user = auth(authorization)
+    uid = user["id"]
+
+    with db() as c:
+        rows = c.execute(
+            """
+            SELECT p.user_id, p.name, r.bonus, r.created_at
+            FROM referrals r
+            JOIN players p ON p.user_id = r.invitee_id
+            WHERE r.inviter_id = %s
+            ORDER BY r.created_at DESC
+            """,
+            (uid,),
+        ).fetchall()
+
+    referrals = [
+        {
+            "user_id": row["user_id"],
+            "name": row["name"],
+            "bonus": row["bonus"],
+            "created_at": row["created_at"],
+        }
+        for row in rows
+    ]
+
+    return {
+        "count": len(referrals),
+        "total_bonus": sum(r["bonus"] for r in referrals),
+        "referrals": referrals,
+    }
 
 def auth(authorization: Optional[str]):
     if not authorization or not authorization.startswith("tma "):
