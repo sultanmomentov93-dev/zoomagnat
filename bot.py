@@ -24,10 +24,16 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return
 
+        app_url = WEBAPP_URL
+
+    if referral_id is not None:
+        separator = "&" if "?" in app_url else "?"
+        app_url += f"{separator}ref={referral_id}"
+
     keyboard = [[
         InlineKeyboardButton(
             "🦁 Открыть ЗооМагнат",
-            web_app=WebAppInfo(url=WEBAPP_URL)
+            web_app=WebAppInfo(url=app_url)
         )
     ]]
 
