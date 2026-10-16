@@ -158,9 +158,6 @@ def validate_init_data(raw: str) -> dict:
             401, "Не удалось проверить авторизацию Telegram"
         )
 
-
-def get_player(user):
-
 def get_player(user, referral_id=None):
     uid = user["id"]
     now = int(time.time())
