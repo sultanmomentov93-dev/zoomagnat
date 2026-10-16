@@ -1652,7 +1652,27 @@ async function claimDailyReward() {
     button.textContent = "🎁 Получить награду";
   }
 }
+function playDailyRewardAnimation() {
+  const page = document.getElementById("daily-rewards-page");
+  const button = document.getElementById("daily-rewards-claim");
 
+  if (!page || !button) return;
+
+  const rect = button.getBoundingClientRect();
+
+  for (let i = 0; i < 9; i++) {
+    const coin = document.createElement("span");
+    coin.className = "daily-reward-coin";
+    coin.textContent = i % 3 === 0 ? "✨" : "🪙";
+    coin.style.left = (rect.left + rect.width / 2) + "px";
+    coin.style.top = (rect.top + rect.height / 2) + "px";
+    coin.style.setProperty("--coin-x", ((i - 4) * 22) + "px");
+    coin.style.animationDelay = (i * 0.06) + "s";
+
+    document.body.appendChild(coin);
+    coin.addEventListener("animationend", () => coin.remove(), { once: true });
+  }
+}
 function closeDailyRewardsPage() {
   document.getElementById("daily-rewards-page").style.display = "none";
 
