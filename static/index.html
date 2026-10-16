@@ -1060,10 +1060,18 @@ emoji.textContent = animal.emoji || "🐾";
 
 async function loadGame() {
   try {
+    const params = new URLSearchParams(window.location.search);
+    const urlReferral = params.get("ref");
+
     const startParam = tg.initDataUnsafe?.start_param || "";
     let referralId = null;
 
-    if (startParam.startsWith("ref_")) {
+    if (urlReferral && /^\d+$/.test(urlReferral)) {
+      const id = Number(urlReferral);
+      if (Number.isSafeInteger(id) && id > 0) {
+        referralId = id;
+      }
+    } else if (startParam.startsWith("ref_")) {
       const id = Number(startParam.slice(4));
       if (Number.isSafeInteger(id) && id > 0) {
         referralId = id;
