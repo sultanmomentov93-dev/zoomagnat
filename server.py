@@ -160,17 +160,48 @@ def validate_init_data(raw: str) -> dict:
 
 
 def get_player(user):
+
+def get_player(user, referral_id=None):
     uid = user["id"]
     now = int(time.time())
     name = (user.get("first_name") or "Игрок")[:80]
 
     with db() as c:
-        c.execute(
+        inserted = c.execute(
             """INSERT INTO players(user_id,name,coins,last_tick,created_at)
                VALUES(%s,%s,250,%s,%s)
-               ON CONFLICT(user_id) DO NOTHING""",
+               ON CONFLICT(user_id) DO NOTHING
+               RETURNING user_id""",
             (uid, name, now, now),
-        )
+        ).fetchone()
+
+        # Бонус получает только пригласивший, только за нового игрока.
+        if inserted and referral_id and referral_id != uid:
+            inviter = c.execute(
+                "SELECT user_id FROM players WHERE user_id=%s",
+                (referral_id,),
+            ).fetchone()
+
+            if inviter:
+                referral = c.execute(
+                    """INSERT INTO referrals(invitee_id, inviter_id, bonus, created_at)
+                       VALUES(%s, %s, 100, %s)
+                       ON CONFLICT(invitee_id) DO NOTHING
+                       RETURNING invitee_id""",
+                    (uid, referral_id, now),
+                ).fetchone()
+
+                if referral:
+                    c.execute(
+                        "UPDATE players SET coins=coins+100 WHERE user_id=%s",
+                        (referral_id,),
+                    )
+                    c.execute(
+                        """INSERT INTO ledger(user_id,event,amount,created_at)
+                           VALUES(%s,%s,%s,%s)""",
+                        (referral_id, "referral_bonus", 100, now),
+                    )
+
         row = c.execute(
             "SELECT * FROM players WHERE user_id=%s", (uid,)
         ).fetchone()
@@ -208,7 +239,7 @@ def get_player(user):
         holdings = c.execute(
             "SELECT animal_key,qty FROM animals WHERE user_id=%s", (uid,)
         ).fetchall()
-        
+
         c.execute(
             """INSERT INTO test_wallets(user_id, test_usdt_cents)
                VALUES(%s, 0)
@@ -220,7 +251,6 @@ def get_player(user):
             (uid,),
         ).fetchone()
 
-    
     qty_by_key = {r["animal_key"]: r["qty"] for r in holdings}
 
     animals = []
@@ -239,7 +269,6 @@ def get_player(user):
         "animals": animals,
         "notice": "Игровые монеты не являются криптовалютой и пока не обмениваются на деньги.",
     }
-
 
 def auth(authorization: Optional[str]):
     if not authorization or not authorization.startswith("tma "):
