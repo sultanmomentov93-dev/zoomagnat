@@ -1315,6 +1315,93 @@ async function loadReferrals() {
     console.error(error);
   }
 }
+  
+async function loadLeaderboard() {
+  const list = document.getElementById("leaderboard-list");
+  list.textContent = "Загружаем рейтинг...";
+
+  try {
+    const initData = window.Telegram?.WebApp?.initData;
+
+    if (!initData) {
+      list.textContent = "Открой игру через Telegram.";
+      return;
+    }
+
+    const response = await fetch("/api/leaderboard", {
+      headers: {
+        Authorization: "tma " + initData
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error("Ошибка загрузки рейтинга");
+    }
+
+    const players = await response.json();
+    list.replaceChildren();
+
+    if (!players.length) {
+      list.textContent = "Пока игроков нет.";
+      return;
+    }
+
+    players.forEach((player, index) => {
+      const item = document.createElement("div");
+      item.style.cssText =
+        "padding:12px;margin-top:8px;background:#172b20;border-radius:10px;display:flex;justify-content:space-between;gap:10px;";
+
+      const name = document.createElement("span");
+      const medal = ["🥇", "🥈", "🥉"][index] || (index + 1) + ".";
+      name.textContent = medal + " " + (player.name || "Игрок");
+
+      const score = document.createElement("b");
+      score.style.color = "#c9ff8b";
+      score.textContent = Number(player.score).toLocaleString("ru-RU") + " 🪙";
+
+      item.append(name, score);
+      list.appendChild(item);
+    });
+  } catch (error) {
+    list.textContent = "Не удалось загрузить рейтинг. Попробуй ещё раз.";
+    console.error(error);
+  }
+}
+
+function openLeaderboardPage() {
+  document.getElementById("leaderboard-page").style.display = "block";
+  document.getElementById("friends-page").style.display = "none";
+
+  document.querySelectorAll(".hero, #territories").forEach(el => {
+    el.style.display = "none";
+  });
+
+  document.querySelectorAll(".section-title").forEach(el => {
+    if (!el.closest("#leaderboard-page")) {
+      el.style.display = "none";
+    }
+  });
+
+  document.getElementById("animals").style.display = "none";
+  document.getElementById("message").style.display = "none";
+
+  loadLeaderboard();
+}
+
+function closeLeaderboardPage() {
+  document.getElementById("leaderboard-page").style.display = "none";
+
+  document.querySelectorAll(".hero, #territories").forEach(el => {
+    el.style.display = "";
+  });
+
+  document.querySelectorAll(".section-title").forEach(el => {
+    el.style.display = "";
+  });
+
+  document.getElementById("animals").style.display = "";
+  document.getElementById("message").style.display = "";
+}
 </script>
 </body>
 </html>
