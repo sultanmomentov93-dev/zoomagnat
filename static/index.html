@@ -1438,6 +1438,111 @@ function closeLeaderboardPage() {
   document.getElementById("animals").style.display = "";
   document.getElementById("message").style.display = "";
 }
+  
+async function openDailyRewardsPage() {
+  document.getElementById("daily-rewards-page").style.display = "block";
+  document.getElementById("friends-page").style.display = "none";
+  document.getElementById("leaderboard-page").style.display = "none";
+
+  document.querySelectorAll(".hero, #territories").forEach(el => {
+    el.style.display = "none";
+  });
+
+  document.querySelectorAll(".section-title").forEach(el => {
+    el.style.display = el.closest("#daily-rewards-page") ? "" : "none";
+  });
+
+  document.getElementById("animals").style.display = "none";
+  document.getElementById("message").style.display = "none";
+
+  await loadDailyRewards();
+}
+
+async function loadDailyRewards() {
+  const status = document.getElementById("daily-rewards-status");
+  const button = document.getElementById("daily-rewards-claim");
+
+  status.textContent = "Загружаем награды...";
+  button.disabled = true;
+
+  try {
+    const data = await api("/api/daily-rewards");
+
+    const rewards = data.rewards || [100, 200, 300, 400, 500, 700, 1000];
+
+    status.innerHTML = `
+      <p>🔥 Твоя серия: <b>${data.streak || 0}</b> дней</p>
+      <p>${data.claimed_today
+        ? "✅ Сегодня награда уже получена."
+        : `🎁 Следующая награда: <b>${data.next_reward}</b> монет (день ${data.next_day})`}
+      </p>
+      <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;">
+        ${rewards.map((amount, i) => `
+          <div style="padding:10px;background:#172b20;border-radius:10px;">
+            ${i + 1 === 7 ? "🏆" : "🎁"} День ${i + 1}<br>
+            <b>${amount} монет</b>
+            ${data.claimed_today && i + 1 === data.streak ? "<br>✅ Получено" : ""}
+          </div>
+        `).join("")}
+      </div>
+    `;
+
+    button.disabled = Boolean(data.claimed_today);
+    button.textContent = data.claimed_today
+      ? "✅ Награда получена"
+      : "🎁 Получить " + data.next_reward + " монет";
+  } catch (error) {
+    status.textContent = "Не удалось загрузить награды. Попробуй ещё раз.";
+    button.disabled = false;
+  }
+}
+
+async function claimDailyReward() {
+  const status = document.getElementById("daily-rewards-status");
+  const button = document.getElementById("daily-rewards-claim");
+
+  button.disabled = true;
+  button.textContent = "⏳ Получаем награду...";
+
+  try {
+    const data = await api("/api/daily-rewards/claim", {
+      method: "POST"
+    });
+
+    if (!data.ok) {
+      status.textContent = data.message || "Награда уже получена сегодня.";
+    } else {
+      status.textContent = data.message;
+    }
+
+    await loadDailyRewards();
+
+    if (typeof loadState === "function") {
+      await loadState();
+    } else if (typeof refreshState === "function") {
+      await refreshState();
+    }
+  } catch (error) {
+    status.textContent = "Ошибка получения награды. Попробуй ещё раз.";
+    button.disabled = false;
+    button.textContent = "🎁 Получить награду";
+  }
+}
+
+function closeDailyRewardsPage() {
+  document.getElementById("daily-rewards-page").style.display = "none";
+
+  document.querySelectorAll(".hero, #territories").forEach(el => {
+    el.style.display = "";
+  });
+
+  document.querySelectorAll(".section-title").forEach(el => {
+    el.style.display = "";
+  });
+
+  document.getElementById("animals").style.display = "";
+  document.getElementById("message").style.display = "";
+}
 </script>
 </body>
 </html>
