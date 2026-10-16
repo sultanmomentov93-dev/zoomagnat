@@ -1505,9 +1505,8 @@ async function claimDailyReward() {
   button.textContent = "⏳ Получаем награду...";
 
   try {
-    const data = await api("/api/daily-rewards/claim", {
-      method: "POST"
-    });
+    
+    const data = await api("/api/daily-rewards/claim", "POST");
 
     if (!data.ok) {
       status.textContent = data.message || "Награда уже получена сегодня.";
