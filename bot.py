@@ -6,6 +6,7 @@ BOT_TOKEN = os.getenv("BOT_TOKEN", "").strip()
 WEBAPP_URL = os.getenv("WEBAPP_URL", "").strip()
 
 
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     args = context.args
     referral_id = None
@@ -24,7 +25,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return
 
-        app_url = WEBAPP_URL
+    app_url = WEBAPP_URL
 
     if referral_id is not None:
         separator = "&" if "?" in app_url else "?"
