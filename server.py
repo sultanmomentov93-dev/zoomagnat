@@ -252,9 +252,18 @@ def index():
     return FileResponse(BASE / "static" / "index.html")
 
 
+
 @app.get("/api/state")
-def state(authorization: Optional[str] = Header(default=None)):
-    return get_player(auth(authorization))
+def state(
+    ref: Optional[int] = None,
+    authorization: Optional[str] = Header(default=None),
+):
+    user = auth(authorization)
+
+    if ref is not None and ref <= 0:
+        ref = None
+
+    return get_player(user, referral_id=ref)
     
 class TestDeposit(BaseModel):
     amount: float
