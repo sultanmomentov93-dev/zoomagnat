@@ -1024,9 +1024,24 @@ emoji.textContent = animal.emoji || "🐾";
   renderZooWorld(state);
 }
 
+
 async function loadGame() {
   try {
-    const state = await api("/api/state");
+    const startParam = tg.initDataUnsafe?.start_param || "";
+    let referralId = null;
+
+    if (startParam.startsWith("ref_")) {
+      const id = Number(startParam.slice(4));
+      if (Number.isSafeInteger(id) && id > 0) {
+        referralId = id;
+      }
+    }
+
+    const path = referralId
+      ? "/api/state?ref=" + encodeURIComponent(referralId)
+      : "/api/state";
+
+    const state = await api(path);
     render(state);
     showMessage(state.notice || "Добро пожаловать в свой зоопарк!");
   } catch (error) {
