@@ -1121,6 +1121,31 @@ async function buy(animalKey) {
 
 loadGame();
 loadExpansions();
+  
+function inviteFriends() {
+  const botUsername = "zoomagnatbot";
+  const userId = tg.initDataUnsafe?.user?.id;
+
+  if (!userId) {
+    showMessage("Открой игру через Telegram, чтобы получить ссылку.");
+    return;
+  }
+
+  const link = "https://t.me/" + botUsername + "?start=ref_" + userId;
+  const message = "Приглашаю тебя в ЗооМагнат! 🦁 Развивай свой зоопарк вместе со мной: " + link;
+
+  const output = document.getElementById("referral-message");
+  output.textContent = link;
+
+  if (tg.openTelegramLink) {
+    tg.openTelegramLink(
+      "https://t.me/share/url?url=" +
+      encodeURIComponent(link) +
+      "&text=" +
+      encodeURIComponent(message)
+    );
+  }
+}
 </script>
 </body>
 </html>
