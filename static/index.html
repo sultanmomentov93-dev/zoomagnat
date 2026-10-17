@@ -1459,6 +1459,42 @@ async function buy(animalKey) {
 }
   
 loadGame();
+  
+let activityTimer = null;
+
+async function sendZooActivity() {
+  if (document.visibilityState !== "visible") return;
+
+  try {
+    await api("/api/zoo/activity", "POST");
+  } catch (error) {
+    console.warn("Не удалось обновить активность:", error.message);
+  }
+}
+
+function startZooActivity() {
+  if (activityTimer !== null) return;
+
+  sendZooActivity();
+  activityTimer = setInterval(sendZooActivity, 15000);
+}
+
+function stopZooActivity() {
+  if (activityTimer !== null) {
+    clearInterval(activityTimer);
+    activityTimer = null;
+  }
+}
+
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") {
+    startZooActivity();
+  } else {
+    stopZooActivity();
+  }
+});
+
+startZooActivity();
 loadExpansions();
   
 
