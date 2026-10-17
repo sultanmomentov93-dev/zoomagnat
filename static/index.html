@@ -1092,6 +1092,7 @@ function renderZooWorld(state) {
   { name: "🏡 Стартовая зона", animals: [] },
   { name: "🌲 Лес", animals: [] },
   { name: "⛰️ Горы", animals: [] },
+  { name: "🌊 Водная зона", animals: [] },
   { name: "🌅 Саванна", animals: [] }
 ];
 
@@ -1148,9 +1149,9 @@ if (name.includes("крол") || name.includes("заяц")) {
     }
   });
 
-  habitats.forEach(habitat => {
+  habitats.forEach((habitat, index) => {
     const panel = document.createElement("section");
-    panel.className = "zoo-habitat";
+    panel.className = "zoo-habitat zoo-habitat-" + index;
 
     const heading = document.createElement("h3");
     heading.textContent = habitat.name;
