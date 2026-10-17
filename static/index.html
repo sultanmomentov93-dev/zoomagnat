@@ -1073,16 +1073,30 @@ function renderZooWorld(state) {
 
     let habitatIndex = 0;
 
-    if (name.includes("крол") || name.includes("заяц")) {
-      habitatIndex = 0;
-    } else if (name.includes("лис") || name.includes("волк") || name.includes("олень")) {
-      habitatIndex = 1;
-    } else if (name.includes("лев") || name.includes("тигр") || name.includes("медвед")) {
-      habitatIndex = 2;
-    } else if (name.includes("рыб") || name.includes("крокодил") || name.includes("черепах")) {
-      habitatIndex = 3;
-    }
-
+if (name.includes("крол") || name.includes("заяц")) {
+  habitatIndex = 0;
+} else if (
+  name.includes("лис") ||
+  name.includes("волк") ||
+  name.includes("олень") ||
+  name.includes("зебр") ||
+  name.includes("жираф")
+) {
+  habitatIndex = 1;
+} else if (
+  name.includes("лев") ||
+  name.includes("тигр") ||
+  name.includes("медвед") ||
+  name.includes("слон")
+) {
+  habitatIndex = 2;
+} else if (
+  name.includes("рыб") ||
+  name.includes("крокодил") ||
+  name.includes("черепах")
+) {
+  habitatIndex = 3;
+}
     const habitat = habitats[habitatIndex];
     const shown = Math.min(qty, 12);
 
