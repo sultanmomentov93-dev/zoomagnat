@@ -775,6 +775,14 @@ body {
   color: white;
   box-shadow: 0 3px 10px #0004;
 }
+    
+/* Фон карточки территории «Саванна» */
+.zone-tile-5 {
+  background:
+    linear-gradient(#30200a22, #061b1244),
+    url("https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?auto=format&fit=crop&w=1200&q=80")
+    center / cover no-repeat !important;
+}
 </style>
 
 </head>
@@ -1001,7 +1009,7 @@ async function loadExpansions() {
       const unlocked = tile.level === 1 || Boolean(zone && zone.unlocked);
 
       const card = document.createElement("div");
-      card.className = "zone-tile" + (unlocked ? "" : " locked");
+      card.className = "zone-tile zone-tile-" + tile.level + (unlocked ? "" : " locked");
       card.dataset.zone = tile.level;
       card.style.cursor = "pointer";
 
