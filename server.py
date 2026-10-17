@@ -295,18 +295,20 @@ def get_player(user, referral_id=None):
         "notice": "Игровые монеты не являются криптовалютой и пока не обмениваются на деньги.",
     }
     
+
 def calculate_ticket_income(uid, holdings, now):
     ticket_price = 5
     interval = 10 * 60
     max_offline = 8 * 60 * 60
 
     animal_count = sum(int(r["qty"]) for r in holdings)
-    visitors_per_interval = animal_count
 
     with db() as c:
         c.execute(
             """
-            INSERT INTO zoo_visitors(user_id, last_ticket_tick)
+            INSERT INTO zoo_visitors(
+                user_id, last_ticket_tick
+            )
             VALUES(%s, %s)
             ON CONFLICT(user_id) DO NOTHING
             """,
@@ -315,7 +317,8 @@ def calculate_ticket_income(uid, holdings, now):
 
         row = c.execute(
             """
-            SELECT last_ticket_tick
+            SELECT last_ticket_tick, total_visitors,
+                   total_ticket_income
             FROM zoo_visitors
             WHERE user_id=%s
             FOR UPDATE
@@ -323,49 +326,67 @@ def calculate_ticket_income(uid, holdings, now):
             (uid,),
         ).fetchone()
 
-        elapsed = max(0, min(now - row["last_ticket_tick"], max_offline))
+        last_tick = int(row["last_ticket_tick"])
+        elapsed = max(0, now - last_tick)
+
+        # Не начисляем больше 8 часов за один простой.
+        if elapsed > max_offline:
+            last_tick = now
+            elapsed = 0
+
         intervals = elapsed // interval
-
-        if intervals <= 0:
-            return {
-                "visitors": 0,
-                "ticket_income": 0,
-                "total_visitors": 0,
-                "total_ticket_income": 0,
-            }
-
-        visitors = visitors_per_interval * intervals
+        visitors = animal_count * intervals
         income = visitors * ticket_price
 
-        c.execute(
-            """
-            UPDATE zoo_visitors
-            SET last_ticket_tick=%s,
-                total_visitors=total_visitors+%s,
-                total_ticket_income=total_ticket_income+%s
-            WHERE user_id=%s
-            """,
-            (row["last_ticket_tick"] + intervals * interval,
-             visitors, income, uid),
-        )
+        if intervals > 0:
+            new_tick = last_tick + intervals * interval
 
-        if income:
-            c.execute(
-                "UPDATE players SET coins=coins+%s WHERE user_id=%s",
-                (income, uid),
-            )
             c.execute(
                 """
-                INSERT INTO ledger(user_id,event,amount,created_at)
-                VALUES(%s,%s,%s,%s)
+                UPDATE zoo_visitors
+                SET last_ticket_tick=%s,
+                    total_visitors=total_visitors+%s,
+                    total_ticket_income=total_ticket_income+%s
+                WHERE user_id=%s
                 """,
-                (uid, "ticket_income", income, now),
+                (new_tick, visitors, income, uid),
+            )
+
+            if income > 0:
+                c.execute(
+                    """
+                    UPDATE players
+                    SET coins=coins+%s
+                    WHERE user_id=%s
+                    """,
+                    (income, uid),
+                )
+
+                c.execute(
+                    """
+                    INSERT INTO ledger(
+                        user_id, event, amount, created_at
+                    )
+                    VALUES(%s, %s, %s, %s)
+                    """,
+                    (uid, "ticket_income", income, now),
+                )
+
+        elif last_tick != int(row["last_ticket_tick"]):
+            c.execute(
+                """
+                UPDATE zoo_visitors
+                SET last_ticket_tick=%s
+                WHERE user_id=%s
+                """,
+                (last_tick, uid),
             )
 
         totals = c.execute(
             """
             SELECT total_visitors, total_ticket_income
-            FROM zoo_visitors WHERE user_id=%s
+            FROM zoo_visitors
+            WHERE user_id=%s
             """,
             (uid,),
         ).fetchone()
