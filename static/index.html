@@ -491,11 +491,32 @@ display: grid;
 gap: 12px;
 }
 
-.zoo-habitat {
-padding: 12px;
-border: 1px solid var(--border);
-border-radius: 14px;
-background: #0b261a;
+
+.zoo-creature,
+.zoo-empty {
+  padding: 10px;
+  border: 1px solid #ffffff30;
+  border-radius: 14px;
+  background: #07351fd9;
+  color: var(--text);
+  box-shadow: 0 3px 10px #0003;
+  backdrop-filter: blur(3px);
+}
+
+.zoo-creature {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 70px;
+  min-height: 82px;
+}
+
+.zoo-creature span {
+  font-size: 30px;
+}
+
+.zoo-creature small {
+  font-size: 12px;
 }
 
 .zoo-habitat h3 {
