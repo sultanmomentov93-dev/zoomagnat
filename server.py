@@ -456,9 +456,34 @@ def auth(authorization: Optional[str]):
 @app.get("/")
 def index():
     return FileResponse(BASE / "static" / "index.html")
+    
 
 
 
+@app.post("/api/zoo/activity")
+def zoo_activity(
+    authorization: Optional[str] = Header(default=None),
+):
+    user = auth(authorization)
+    uid = user["id"]
+    now = int(time.time())
+
+    with db() as c:
+        c.execute(
+            """
+            INSERT INTO zoo_visitors(
+                user_id, last_ticket_tick, is_open, last_active_at
+            )
+            VALUES(%s, %s, TRUE, %s)
+            ON CONFLICT(user_id)
+            DO UPDATE SET
+                is_open=TRUE,
+                last_active_at=EXCLUDED.last_active_at
+            """,
+            (uid, now, now),
+        )
+
+    return {"ok": True}
 @app.get("/api/state")
 def state(
     ref: Optional[int] = None,
