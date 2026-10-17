@@ -23,13 +23,16 @@ REFERRAL_SECRET = os.getenv("REFERRAL_SECRET", "").strip()
 app = FastAPI(title="ZooMagnat MVP")
 app.mount("/static", StaticFiles(directory=BASE / "static"), name="static")
 
+
 ANIMALS = {
     "rabbit": {"name": "Кролик", "price": 50, "income": 2, "emoji": "🐰"},
     "fox": {"name": "Лиса", "price": 180, "income": 7, "emoji": "🦊"},
     "deer": {"name": "Олень", "price": 600, "income": 22, "emoji": "🦌"},
     "lion": {"name": "Лев", "price": 1800, "income": 70, "emoji": "🦁"},
+    "zebra": {"name": "Зебра", "price": 3500, "income": 120, "emoji": "🦓"},
+    "elephant": {"name": "Слон", "price": 7500, "income": 260, "emoji": "🐘"},
+    "giraffe": {"name": "Жираф", "price": 12000, "income": 420, "emoji": "🦒"},
 }
-
 
 def db():
     if not DATABASE_URL:
