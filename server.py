@@ -267,6 +267,15 @@ def get_player(user, referral_id=None):
         qty = qty_by_key.get(key, 0)
         animals.append({"key": key, **info, "qty": qty})
 
+        ticket_data = calculate_ticket_income(uid, holdings, now)
+
+    row = None
+    with db() as c:
+        row = c.execute(
+            "SELECT * FROM players WHERE user_id=%s",
+            (uid,),
+        ).fetchone()
+
     total_income = sum(a["income"] * a["qty"] for a in animals)
     return {
         "user_id": uid,
