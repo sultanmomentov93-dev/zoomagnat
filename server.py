@@ -119,11 +119,14 @@ def init_db():
                 last_claim_date DATE
             )
         """)
-
-@app.on_event("startup")
-def startup():
-    init_db()
-
+          c.execute("""
+            CREATE TABLE IF NOT EXISTS zoo_visitors(
+                user_id BIGINT PRIMARY KEY,
+                last_ticket_tick BIGINT NOT NULL DEFAULT 0,
+                total_visitors BIGINT NOT NULL DEFAULT 0,
+                total_ticket_income BIGINT NOT NULL DEFAULT 0
+            )
+        """)
 
 @app.on_event("startup")
 def startup():
