@@ -1268,6 +1268,17 @@ function render(state) {
   latestState = state;
   document.getElementById("coins").textContent = state.coins;
   document.getElementById("income").textContent = state.income_per_minute;
+  document.getElementById("visitors-count").textContent =
+  Number(state.visitors || 0).toLocaleString("ru-RU");
+
+document.getElementById("ticket-income").textContent =
+  Number(state.ticket_income || 0).toLocaleString("ru-RU");
+
+document.getElementById("visitors-total").textContent =
+  Number(state.total_visitors || 0).toLocaleString("ru-RU");
+
+document.getElementById("ticket-income-total").textContent =
+  Number(state.total_ticket_income || 0).toLocaleString("ru-RU");
   document.getElementById("test-usdt").textContent =
    (Number(state.test_usdt) || 0).toFixed(2);
   document.getElementById("exchange-rate").textContent =
