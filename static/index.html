@@ -1078,18 +1078,21 @@ if (name.includes("крол") || name.includes("заяц")) {
 } else if (
   name.includes("лис") ||
   name.includes("волк") ||
-  name.includes("олень") ||
-  name.includes("зебр") ||
-  name.includes("жираф")
+  name.includes("олень")
 ) {
   habitatIndex = 1;
 } else if (
   name.includes("лев") ||
   name.includes("тигр") ||
-  name.includes("медвед") ||
-  name.includes("слон")
+  name.includes("медвед")
 ) {
   habitatIndex = 2;
+} else if (
+  name.includes("зебр") ||
+  name.includes("слон") ||
+  name.includes("жираф")
+) {
+  habitatIndex = 3;
 } else if (
   name.includes("рыб") ||
   name.includes("крокодил") ||
