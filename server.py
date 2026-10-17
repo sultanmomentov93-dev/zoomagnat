@@ -642,10 +642,12 @@ def claim_daily_reward(
 def health():
     return {"ok": True, "game": "ZooMagnat", "version": "0.2.0"}
     
+
 EXPANSIONS = {
     2: {"name": "Лес", "price": 1000},
     3: {"name": "Горы", "price": 5000},
     4: {"name": "Водная зона", "price": 20000},
+    5: {"name": "Саванна", "price": 50000},
 }
 
 
