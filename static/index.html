@@ -888,8 +888,12 @@ async function loadExpansions() {
 
         if (unlocked) {
           document.body.classList.remove(
-            "zone-start", "zone-forest", "zone-mountains", "zone-water"
-          );
+           "zone-start",
+           "zone-forest",
+           "zone-mountains",
+           "zone-water",
+           "zone-savanna"
+         );
           document.body.classList.add(backgrounds[tile.level]);
           showMessage("🌿 Ты перешёл в территорию «" + tile.name + "»!");
           return;
