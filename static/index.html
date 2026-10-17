@@ -571,6 +571,68 @@ grid-template-columns: 1fr;
     animation: none !important;
   }
 }
+
+/* Нижняя панель навигации */
+body {
+  padding-bottom: calc(100px + env(safe-area-inset-bottom));
+}
+.bottom-nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10000;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  padding: 9px 10px calc(9px + env(safe-area-inset-bottom));
+  background: rgba(7, 29, 19, .97);
+  border-top: 1px solid #39764b;
+  box-shadow: 0 -8px 24px rgba(0,0,0,.28);
+  backdrop-filter: blur(12px);
+}
+.bottom-nav button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 0;
+  margin: 0;
+  padding: 8px 3px;
+  border: 1px solid transparent;
+  border-radius: 13px;
+  background: transparent;
+  color: #b8cbbb;
+  box-shadow: none;
+  font-size: 11px;
+  line-height: 1.2;
+  font-weight: 700;
+}
+.bottom-nav button .nav-icon {
+  font-size: 23px;
+  line-height: 1;
+}
+.bottom-nav button.active {
+  color: #10251b;
+  background: linear-gradient(135deg, #ffe9a0, #e5b94f);
+  border-color: #fff0b8;
+}
+.bottom-nav button:active {
+  transform: scale(.96);
+}
+@media (min-width: 700px) {
+  .bottom-nav {
+    left: 50%;
+    right: auto;
+    width: min(100%, 760px);
+    transform: translateX(-50%);
+    border-left: 1px solid #39764b;
+    border-right: 1px solid #39764b;
+    border-radius: 16px 16px 0 0;
+  }
+}
+
 </style>
 
 </head>
@@ -775,6 +837,21 @@ grid-template-columns: 1fr;
     <p>Монеты используются только внутри игры и не обмениваются на реальные деньги.</p>
   </div>
 </main>
+
+<nav class="bottom-nav" aria-label="Главное меню">
+  <button type="button" data-nav="park" class="active" onclick="navigateTo('park')">
+    <span class="nav-icon">🌳</span><span>Парк</span>
+  </button>
+  <button type="button" data-nav="friends" onclick="navigateTo('friends')">
+    <span class="nav-icon">👥</span><span>Друзья</span>
+  </button>
+  <button type="button" data-nav="daily" onclick="navigateTo('daily')">
+    <span class="nav-icon">🎁</span><span>Бонус</span>
+  </button>
+  <button type="button" data-nav="rating" onclick="navigateTo('rating')">
+    <span class="nav-icon">🏆</span><span>Рейтинг</span>
+  </button>
+</nav>
 
 <script>
 const tg = window.Telegram.WebApp;
@@ -1270,6 +1347,56 @@ async function buy(animalKey) {
 loadGame();
 loadExpansions();
   
+
+function setActiveNav(section) {
+  document.querySelectorAll(".bottom-nav [data-nav]").forEach(button => {
+    const active = button.dataset.nav === section;
+    button.classList.toggle("active", active);
+    if (active) button.setAttribute("aria-current", "page");
+    else button.removeAttribute("aria-current");
+  });
+}
+
+function navigateTo(section) {
+  const pageIds = [
+    "friends-page",
+    "daily-rewards-page",
+    "leaderboard-page"
+  ];
+  pageIds.forEach(id => {
+    const page = document.getElementById(id);
+    if (page) page.style.display = "none";
+  });
+
+  if (section === "friends") {
+    setActiveNav("friends");
+    openFriendsPage();
+    return;
+  }
+  if (section === "daily") {
+    setActiveNav("daily");
+    openDailyRewardsPage();
+    return;
+  }
+  if (section === "rating") {
+    setActiveNav("rating");
+    openLeaderboardPage();
+    return;
+  }
+
+  // Возвращаем все основные блоки парка и скрываем страницы разделов.
+  document.querySelectorAll(".hero, #territories").forEach(el => {
+    el.style.display = "";
+  });
+  document.querySelectorAll(".section-title").forEach(el => {
+    el.style.display = "";
+  });
+  document.getElementById("animals").style.display = "";
+  document.getElementById("message").style.display = "";
+  setActiveNav("park");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
 function inviteFriends() {
   const botUsername = "zoomagnatbot";
   const userId = tg.initDataUnsafe?.user?.id;
@@ -1295,6 +1422,7 @@ function inviteFriends() {
   }
 }
   function openFriendsPage() {
+  setActiveNav("friends");
   document.getElementById("friends-page").style.display = "block";
   loadReferrals();
 
@@ -1313,6 +1441,7 @@ function inviteFriends() {
 }
 
 function closeFriendsPage() {
+  setActiveNav("park");
   document.getElementById("friends-page").style.display = "none";
 
   document.querySelectorAll(".hero, #territories").forEach(el => {
@@ -1444,6 +1573,7 @@ async function loadLeaderboard() {
 }
 
 function openLeaderboardPage() {
+  setActiveNav("rating");
   document.getElementById("leaderboard-page").style.display = "block";
   document.getElementById("friends-page").style.display = "none";
 
@@ -1464,6 +1594,7 @@ function openLeaderboardPage() {
 }
 
 function closeLeaderboardPage() {
+  setActiveNav("park");
   document.getElementById("leaderboard-page").style.display = "none";
 
   document.querySelectorAll(".hero, #territories").forEach(el => {
@@ -1479,6 +1610,7 @@ function closeLeaderboardPage() {
 }
   
 async function openDailyRewardsPage() {
+  setActiveNav("daily");
   document.getElementById("daily-rewards-page").style.display = "block";
   document.getElementById("friends-page").style.display = "none";
   document.getElementById("leaderboard-page").style.display = "none";
@@ -1674,6 +1806,7 @@ function playDailyRewardAnimation() {
   }
 }
 function closeDailyRewardsPage() {
+  setActiveNav("park");
   document.getElementById("daily-rewards-page").style.display = "none";
 
   document.querySelectorAll(".hero, #territories").forEach(el => {
