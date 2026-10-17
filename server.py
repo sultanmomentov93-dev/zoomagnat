@@ -284,6 +284,10 @@ def get_player(user, referral_id=None):
         "test_usdt": wallet["test_usdt_cents"] / 100,
         "exchange_rate": 10000,
         "income_per_minute": total_income,
+        "visitors": ticket_data["visitors"],
+        "ticket_income": ticket_data["ticket_income"],
+        "total_visitors": ticket_data["total_visitors"],
+        "total_ticket_income": ticket_data["total_ticket_income"],
         "animals": animals,
         "notice": "Игровые монеты не являются криптовалютой и пока не обмениваются на деньги.",
     }
