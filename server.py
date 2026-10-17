@@ -226,38 +226,21 @@ def get_player(user, referral_id=None):
             "SELECT * FROM players WHERE user_id=%s", (uid,)
         ).fetchone()
 
-        elapsed = max(0, min(now - row["last_tick"], 8 * 3600))
-        holdings = c.execute(
-            "SELECT animal_key,qty FROM animals WHERE user_id=%s", (uid,)
-        ).fetchall()
-
-        income_per_minute = sum(
-            ANIMALS[r["animal_key"]]["income"] * r["qty"]
-            for r in holdings
+        
+        # Доход за время отсутствия игрока отключён.
+        # Обычный доход животных пока не начисляем в этом блоке.
+        c.execute(
+            "UPDATE players SET last_tick=%s WHERE user_id=%s",
+            (now, uid),
         )
-        earned = (elapsed // 60) * income_per_minute
-
-        if earned:
-            c.execute(
-                "UPDATE players SET coins=coins+%s,last_tick=%s WHERE user_id=%s",
-                (earned, now, uid),
-            )
-            c.execute(
-                """INSERT INTO ledger(user_id,event,amount,created_at)
-                   VALUES(%s,%s,%s,%s)""",
-                (uid, "offline_income", earned, now),
-            )
-        else:
-            c.execute(
-                "UPDATE players SET last_tick=%s WHERE user_id=%s",
-                (now, uid),
-            )
 
         row = c.execute(
             "SELECT * FROM players WHERE user_id=%s", (uid,)
         ).fetchone()
+
         holdings = c.execute(
-            "SELECT animal_key,qty FROM animals WHERE user_id=%s", (uid,)
+            "SELECT animal_key,qty FROM animals WHERE user_id=%s",
+            (uid,),
         ).fetchall()
 
         c.execute(
