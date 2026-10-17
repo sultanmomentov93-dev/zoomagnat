@@ -128,7 +128,17 @@ def init_db():
                 total_ticket_income BIGINT NOT NULL DEFAULT 0
             )
         """)
-
+    
+        c.execute("""
+            ALTER TABLE zoo_visitors
+            ADD COLUMN IF NOT EXISTS is_open BOOLEAN
+            NOT NULL DEFAULT FALSE
+        """)
+        c.execute("""
+            ALTER TABLE zoo_visitors
+            ADD COLUMN IF NOT EXISTS last_active_at BIGINT
+            NOT NULL DEFAULT 0
+        """)
 @app.on_event("startup")
 def startup():
     init_db()
