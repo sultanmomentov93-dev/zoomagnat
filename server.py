@@ -306,10 +306,11 @@ def get_player(user, referral_id=None):
     }
     
 
+
 def calculate_ticket_income(uid, holdings, now):
     ticket_price = 5
-    interval = 10 * 60
-    max_offline = 8 * 60 * 60
+    interval = 60
+    max_active_gap = 30
 
     animal_count = sum(int(r["qty"]) for r in holdings)
 
@@ -328,7 +329,7 @@ def calculate_ticket_income(uid, holdings, now):
         row = c.execute(
             """
             SELECT last_ticket_tick, total_visitors,
-                   total_ticket_income
+                   total_ticket_income, is_open, last_active_at
             FROM zoo_visitors
             WHERE user_id=%s
             FOR UPDATE
@@ -337,59 +338,65 @@ def calculate_ticket_income(uid, holdings, now):
         ).fetchone()
 
         last_tick = int(row["last_ticket_tick"])
-        elapsed = max(0, now - last_tick)
+        last_active = int(row["last_active_at"] or 0)
+        is_open = bool(row["is_open"])
 
-        # Не начисляем больше 8 часов за один простой.
-        if elapsed > max_offline:
-            last_tick = now
-            elapsed = 0
+        # Доход начисляется только при открытом зоопарке
+        # и недавней активности игрока.
+        active = is_open and last_active > 0 and now - last_active <= max_active_gap
 
-        intervals = elapsed // interval
-        visitors = animal_count * intervals
-        income = visitors * ticket_price
+        visitors = 0
+        income = 0
 
-        if intervals > 0:
-            new_tick = last_tick + intervals * interval
+        if active:
+            elapsed = max(0, min(now - last_tick, max_active_gap))
+            intervals = elapsed // interval
 
-            c.execute(
-                """
-                UPDATE zoo_visitors
-                SET last_ticket_tick=%s,
-                    total_visitors=total_visitors+%s,
-                    total_ticket_income=total_ticket_income+%s
-                WHERE user_id=%s
-                """,
-                (new_tick, visitors, income, uid),
-            )
+            visitors = animal_count * intervals
+            income = visitors * ticket_price
 
-            if income > 0:
+            if intervals > 0:
+                last_tick += intervals * interval
+
                 c.execute(
                     """
-                    UPDATE players
-                    SET coins=coins+%s
+                    UPDATE zoo_visitors
+                    SET last_ticket_tick=%s,
+                        total_visitors=total_visitors+%s,
+                        total_ticket_income=total_ticket_income+%s
                     WHERE user_id=%s
                     """,
-                    (income, uid),
+                    (last_tick, visitors, income, uid),
                 )
 
-                c.execute(
-                    """
-                    INSERT INTO ledger(
-                        user_id, event, amount, created_at
+                if income > 0:
+                    c.execute(
+                        """
+                        UPDATE players
+                        SET coins=coins+%s
+                        WHERE user_id=%s
+                        """,
+                        (income, uid),
                     )
-                    VALUES(%s, %s, %s, %s)
-                    """,
-                    (uid, "ticket_income", income, now),
-                )
 
-        elif last_tick != int(row["last_ticket_tick"]):
+                    c.execute(
+                        """
+                        INSERT INTO ledger(
+                            user_id, event, amount, created_at
+                        )
+                        VALUES(%s, %s, %s, %s)
+                        """,
+                        (uid, "ticket_income", income, now),
+                    )
+        else:
+            # Не накапливаем доход за время отсутствия игрока.
             c.execute(
                 """
                 UPDATE zoo_visitors
                 SET last_ticket_tick=%s
                 WHERE user_id=%s
                 """,
-                (last_tick, uid),
+                (now, uid),
             )
 
         totals = c.execute(
