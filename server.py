@@ -292,8 +292,8 @@ def get_player(user, referral_id=None):
 
 def calculate_ticket_income(uid, holdings, now):
     ticket_price = 5
-interval = 60
-max_active_gap = 90
+    interval = 60
+    max_active_gap = 90
 
     animal_count = sum(int(r["qty"]) for r in holdings)
 
