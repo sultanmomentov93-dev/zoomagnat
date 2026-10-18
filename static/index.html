@@ -1485,6 +1485,12 @@ async function sendZooActivity() {
 }
 
 window.addEventListener("pagehide", sendZooClose);
+  document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "hidden") {
+    stopZooActivity();
+    sendZooClose();
+  }
+});
 
 function startZooActivity() {
   if (activityTimer !== null) return;
