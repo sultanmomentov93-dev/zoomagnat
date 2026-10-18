@@ -1515,12 +1515,15 @@ function stopStateRefresh() {
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "visible") {
     startZooActivity();
+    startStateRefresh();
   } else {
     stopZooActivity();
+    stopStateRefresh();
   }
 });
 
 startZooActivity();
+startStateRefresh();
 loadExpansions();
   
 
