@@ -1485,6 +1485,32 @@ function stopZooActivity() {
     activityTimer = null;
   }
 }
+  let stateRefreshTimer = null;
+
+async function refreshGameData() {
+  if (document.visibilityState !== "visible" || busy) return;
+
+  try {
+    const state = await api("/api/state");
+    render(state);
+  } catch (error) {
+    console.warn("Не удалось обновить данные игры:", error.message);
+  }
+}
+
+function startStateRefresh() {
+  if (stateRefreshTimer !== null) return;
+
+  refreshGameData();
+  stateRefreshTimer = setInterval(refreshGameData, 15000);
+}
+
+function stopStateRefresh() {
+  if (stateRefreshTimer !== null) {
+    clearInterval(stateRefreshTimer);
+    stateRefreshTimer = null;
+  }
+}
 
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "visible") {
