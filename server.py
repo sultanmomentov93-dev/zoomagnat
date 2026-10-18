@@ -467,6 +467,28 @@ def zoo_activity(
         )
 
     return {"ok": True}
+    
+@app.post("/api/zoo/close")
+def zoo_close(
+    authorization: Optional[str] = Header(default=None),
+):
+    user = auth(authorization)
+    uid = user["id"]
+    now = int(time.time())
+
+    with db() as c:
+        c.execute(
+            """
+            UPDATE zoo_visitors
+            SET is_open=FALSE,
+                last_active_at=0,
+                last_ticket_tick=%s
+            WHERE user_id=%s
+            """,
+            (now, uid),
+        )
+
+    return {"ok": True}
 @app.get("/api/state")
 def state(
     ref: Optional[int] = None,
