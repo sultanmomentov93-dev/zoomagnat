@@ -1471,6 +1471,20 @@ async function sendZooActivity() {
     console.warn("Не удалось обновить активность:", error.message);
   }
 }
+  function sendZooClose() {
+  const initData = tg.initData;
+  if (!initData) return;
+
+  fetch("/api/zoo/close", {
+    method: "POST",
+    headers: {
+      "Authorization": "tma " + initData
+    },
+    keepalive: true
+  }).catch(() => {});
+}
+
+window.addEventListener("pagehide", sendZooClose);
 
 function startZooActivity() {
   if (activityTimer !== null) return;
